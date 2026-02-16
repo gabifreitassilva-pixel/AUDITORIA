@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUDITOR FISCAL PRO | MARADEL SYSTEM</title>
+    <title>AUDITOR FISCAL PRO | MARADEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.css"></script>
@@ -224,17 +224,29 @@
 
     <script>
         // ==================================================================================
-        // 1. CARREGAMENTO DOS ARQUIVOS EXTERNOS
+        // 1. CARREGAMENTO DOS ARQUIVOS EXTERNOS (NOMES EXATOS DO REPOSITÓRIO)
         // ==================================================================================
         let DB_FEDERAL = [], DB_ST = [], DB_BENEFITS = [];
-        const FILE_PIS = "lei_federal.html"; const FILE_ST = "lei_estadual.html"; const FILE_BENEFITS = "lei_beneficios.html";
+        
+        // --- ATENÇÃO: NOMES CORRIGIDOS CONFORME SEU PRINT ---
+        const FILE_PIS = "PIS COFINS.HTML";
+        // Atenção aos acentos, espaços e .html minúsculo aqui
+        const FILE_ST = "CONVÊNIO ICMS N° 142, DE 14 DE DEZEMBRO DE 2018.html"; 
+        const FILE_BENEFITS = "BENEFICIOS ISENCOES E REDUCAO.HTML";
 
         async function loadExternalData() {
             try {
-                const [r1, r2, r3] = await Promise.all([fetch(FILE_PIS), fetch(FILE_ST), fetch(FILE_BENEFITS)]);
+                // EncodeURI ajuda a tratar espaços e caracteres especiais na URL
+                const [r1, r2, r3] = await Promise.all([
+                    fetch(encodeURI(FILE_PIS)), 
+                    fetch(encodeURI(FILE_ST)), 
+                    fetch(encodeURI(FILE_BENEFITS))
+                ]);
+
                 if(r1.ok) DB_FEDERAL = parseTableData(await r1.text(), 'federal');
                 if(r2.ok) DB_ST = parseTableData(await r2.text(), 'st');
                 if(r3.ok) DB_BENEFITS = parseTableData(await r3.text(), 'benefits');
+                
                 const total = DB_FEDERAL.length + DB_ST.length + DB_BENEFITS.length;
                 if(total > 0) {
                     document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-check text-green-500"></i> ${total.toLocaleString()} regras carregadas.`;
@@ -479,7 +491,6 @@
             if(currentFilter === 'warning') visibleItems = xmlItems.filter(i => i.status === 'warning');
 
             visibleItems.slice(0, 200).forEach((item, index) => {
-                // Mapeia index original se estiver filtrado (para edição funcionar)
                 const originalIndex = xmlItems.indexOf(item);
 
                 let badge = '<span class="status-badge bg-slate-700 text-slate-400">OK</span>';
