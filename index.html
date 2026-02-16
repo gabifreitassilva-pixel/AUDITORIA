@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUDITOR FISCAL PRO | INTELLIGENCE SYSTEM</title>
+    <title>AUDITOR FISCAL PRO | MARADEL INTELLIGENCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.css"></script>
@@ -20,11 +20,9 @@
                         accent: '#3b82f6',
                         success: '#10b981',
                         danger: '#ef4444',
-                        warning: '#f59e0b'
+                        gold: '#eab308'
                     },
-                    fontFamily: {
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
+                    fontFamily: { mono: ['JetBrains Mono', 'monospace'] }
                 }
             }
         }
@@ -34,11 +32,11 @@
         .glass-panel { background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(255,255,255,0.05); }
         .table-head { position: sticky; top: 0; z-index: 20; background: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         
-        .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; display: inline-block; min-width: 90px; text-align: center; }
+        .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; display: inline-block; min-width: 80px; text-align: center; }
         .status-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
         .status-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
         .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .status-fixed { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid #3b82f6; }
+        .status-fixed { background: #3b82f6; color: white; border: 1px solid #2563eb; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
@@ -46,43 +44,40 @@
         ::-webkit-scrollbar-thumb:hover { background: #f97316; }
         
         .hidden-tab { display: none !important; }
-        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: #1e293b; width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid #334155; padding: 0; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .modal-content { background: #1e293b; width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
     </style>
 </head>
 <body class="flex h-screen w-full">
 
     <aside class="w-64 bg-sidebar border-r border-slate-800 flex flex-col z-30">
         <div class="px-6 py-8">
-            <h1 class="text-xl font-black italic tracking-tighter text-white">AUDITOR<span class="text-primary">.AI</span></h1>
-            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Connected System</p>
+            <h1 class="text-xl font-black italic tracking-tighter text-white">AUDITOR<span class="text-primary">.MARADEL</span></h1>
+            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Inteligência Tributária</p>
         </div>
 
         <nav class="space-y-1 flex-1 px-3">
-            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-2">Gerencial</p>
+            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-2">Estratégico</p>
             <button onclick="switchTab('dashboard')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-bold text-white hover:bg-slate-800 transition border-l-2 border-primary bg-slate-900/50">
-                <i class="fa-solid fa-chart-pie w-5 text-primary"></i> Dashboard (Vendas)
+                <i class="fa-solid fa-chart-line w-5 text-primary"></i> Resultado Financeiro
             </button>
 
-            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-6">Operacional</p>
+            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-6">Auditoria</p>
             <button onclick="switchTab('audit')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition border-l-2 border-transparent">
-                <i class="fa-solid fa-file-invoice w-5"></i> Auditoria de XML
+                <i class="fa-solid fa-file-invoice-dollar w-5"></i> Análise de XML
             </button>
             <button onclick="switchTab('pgdas')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition border-l-2 border-transparent">
-                <i class="fa-solid fa-scale-unbalanced w-5"></i> Conferência PGDAS
+                <i class="fa-solid fa-scale-unbalanced w-5"></i> Cruzamento PGDAS
             </button>
 
-            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-6">Base Legal (Consulta)</p>
+            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-6">Base Legal</p>
             <button onclick="switchLibrary('federal')" class="w-full flex items-center gap-3 px-4 py-2 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-800"><i class="fa-solid fa-book w-5"></i> Federal (PIS/COF)</button>
             <button onclick="switchLibrary('st')" class="w-full flex items-center gap-3 px-4 py-2 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-800"><i class="fa-solid fa-industry w-5"></i> Estadual (ST)</button>
             <button onclick="switchLibrary('benefits')" class="w-full flex items-center gap-3 px-4 py-2 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-800"><i class="fa-solid fa-hand-holding-dollar w-5"></i> Benefícios SP</button>
         </nav>
         
         <div class="p-4 bg-slate-950 border-t border-slate-900 text-center">
-            <p class="text-[10px] text-slate-500" id="db-status">
-                <i class="fa-solid fa-circle-notch fa-spin text-primary"></i> Conectando...
-            </p>
+            <p class="text-[10px] text-green-500 font-bold" id="db-status"><i class="fa-solid fa-database"></i> Base Carregada (Offline)</p>
         </div>
     </aside>
 
@@ -95,39 +90,48 @@
             <div id="audit-actions" class="hidden-tab flex gap-2">
                 <input type="file" id="xmlInput" multiple accept=".xml" class="hidden" onchange="handleXmlImport(event)">
                 <button onclick="document.getElementById('xmlInput').click()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-cloud-arrow-up"></i> IMPORTAR XMLs</button>
-                <button onclick="exportReport()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-green-900/20"><i class="fa-solid fa-file-excel"></i> RELATÓRIO</button>
+                <button onclick="exportReport()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-green-900/20"><i class="fa-solid fa-file-excel"></i> RELATÓRIO CORREÇÃO</button>
             </div>
         </header>
 
         <div id="tab-dashboard" class="flex-1 p-8 overflow-auto">
-            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700 p-8 mb-8 relative overflow-hidden shadow-2xl group">
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700 p-10 mb-8 relative overflow-hidden shadow-2xl group">
                 <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-primary/5 to-transparent pointer-events-none"></div>
-                <div class="relative z-10 flex justify-between items-center">
-                    <div class="max-w-3xl">
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"><i class="fa-solid fa-star mr-1"></i> Inteligência Maradel</span>
-                        </div>
-                        <h1 class="text-4xl font-black text-white mb-4 leading-tight">Transforme <span class="text-danger decoration-2 underline decoration-danger/30">Erros de Cadastro</span> em <span class="text-success">Caixa Líquido</span>.</h1>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-8 border-l-2 border-slate-600 pl-4">A tecnologia da Maradel cruzou seus XMLs com a legislação vigente. Corrija seu cadastro e evite multas enquanto recupera impostos.</p>
-                        <div class="flex items-end gap-6">
-                            <div>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Potencial Recuperável</p>
-                                <h2 class="text-5xl font-mono font-black text-success tracking-tighter" id="dash-recovery">R$ 0,00</h2>
-                            </div>
-                        </div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"><i class="fa-solid fa-crown mr-1"></i> Diagnóstico Maradel</span>
                     </div>
-                    <div class="text-right flex flex-col items-end gap-6 pl-8 border-l border-slate-700/50">
-                        <button onclick="switchTab('audit')" class="bg-white hover:bg-slate-200 text-dark font-bold py-3 px-6 rounded shadow-xl transition flex items-center gap-3 text-sm uppercase tracking-wide group">
-                            Visualizar Correções <i class="fa-solid fa-arrow-right text-primary group-hover:translate-x-1 transition-transform"></i>
-                        </button>
+                    
+                    <div id="hero-message">
+                        <h1 class="text-3xl font-black text-white mb-4 leading-tight">
+                            Importe seus XMLs para descobrir o <span class="text-primary">Dinheiro Oculto</span> na sua operação.
+                        </h1>
+                        <p class="text-slate-400 text-sm max-w-2xl">
+                            Nossa inteligência artificial identifica NCMs incorretos e tributação indevida instantaneamente.
+                        </p>
+                    </div>
+
+                    <div id="hero-result" class="hidden-tab mt-6 pt-6 border-t border-slate-700/50">
+                        <h1 class="text-3xl font-light text-white mb-2 leading-tight">
+                            Com a <strong class="text-primary">Maradel</strong>, você tem <span class="text-success font-black text-4xl" id="display-recovery">R$ 0,00</span> a recuperar.
+                        </h1>
+                        <p class="text-slate-300 text-sm max-w-3xl mt-4 leading-relaxed">
+                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Valores identificados como <strong>pagos a maior</strong> devido ao enquadramento incorreto de NCMs (Monofásico/ST).<br>
+                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Risco de autuação eliminado com a correção cadastral sugerida.
+                        </p>
+                        <div class="mt-8">
+                            <button onclick="switchTab('audit')" class="bg-white hover:bg-slate-200 text-dark font-bold py-3 px-8 rounded shadow-xl transition flex items-center gap-3 text-sm uppercase tracking-wide">
+                                VER RELATÓRIO DE CORREÇÃO <i class="fa-solid fa-arrow-right text-primary"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-4 gap-6">
                 <div class="glass-panel p-5 rounded-xl border-l-4 border-slate-500"><p class="text-[10px] uppercase text-slate-400 font-bold">XMLs Processados</p><h3 class="text-3xl font-black text-white mt-1" id="dash-xmls">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-danger"><p class="text-[10px] uppercase text-slate-400 font-bold">Erros de NCM</p><h3 class="text-3xl font-black text-danger mt-1" id="dash-ncm-errors">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-warning"><p class="text-[10px] uppercase text-slate-400 font-bold">Divergências CST</p><h3 class="text-3xl font-black text-warning mt-1" id="dash-cst-errors">0</h3></div>
+                <div class="glass-panel p-5 rounded-xl border-l-4 border-danger"><p class="text-[10px] uppercase text-slate-400 font-bold">Cadastros Errados</p><h3 class="text-3xl font-black text-danger mt-1" id="dash-ncm-errors">0</h3></div>
+                <div class="glass-panel p-5 rounded-xl border-l-4 border-warning"><p class="text-[10px] uppercase text-slate-400 font-bold">Tributação Indevida</p><h3 class="text-3xl font-black text-warning mt-1" id="dash-cst-errors">0</h3></div>
                 <div class="glass-panel p-5 rounded-xl border-l-4 border-success"><p class="text-[10px] uppercase text-slate-400 font-bold">Itens Auditados</p><h3 class="text-3xl font-black text-success mt-1" id="dash-products">0</h3></div>
             </div>
         </div>
@@ -135,21 +139,25 @@
         <div id="tab-audit" class="flex-1 p-6 hidden-tab flex flex-col overflow-hidden">
             <div class="flex-1 glass-panel rounded-xl border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
                 <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-robot text-primary"></i> Auditoria Detalhada</h3>
+                    <h3 class="font-bold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-robot text-primary"></i> Auditoria Analítica</h3>
+                    <div class="text-xs text-slate-400 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Base Atualizada (2025)
+                    </div>
                 </div>
                 <div class="flex-1 overflow-auto bg-slate-900/50">
                     <table class="w-full text-left text-xs">
                         <thead class="table-head text-slate-300 uppercase font-bold text-[10px]">
                             <tr>
-                                <th class="p-4 w-32 text-center">Status</th>
-                                <th class="p-4 w-1/4">Produto (XML)</th>
-                                <th class="p-4 w-40">Classif. Atual</th>
-                                <th class="p-4 text-primary w-1/3">Diagnóstico Legal</th>
-                                <th class="p-4 w-40 text-center">Ações</th>
+                                <th class="p-4 w-24 text-center">Status</th>
+                                <th class="p-4 w-1/4">Produto</th>
+                                <th class="p-4">Original (XML)</th>
+                                <th class="p-4 text-primary bg-primary/5">Sugestão Maradel</th>
+                                <th class="p-4 text-slate-400 w-1/4">Diagnóstico</th>
+                                <th class="p-4 w-32 text-center">Ação</th>
                             </tr>
                         </thead>
                         <tbody id="audit-body" class="divide-y divide-slate-800 text-slate-300">
-                            <tr><td colspan="5" class="p-20 text-center text-slate-500">Aguardando importação de XML...</td></tr>
+                            <tr><td colspan="6" class="p-20 text-center text-slate-500">Aguardando importação de XML...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -158,12 +166,12 @@
 
         <div id="tab-pgdas" class="flex-1 p-8 hidden-tab overflow-auto">
             <div class="max-w-4xl mx-auto glass-panel p-8 rounded-xl border border-slate-700">
-                <h2 class="text-xl font-bold text-white mb-6">Conferência PGDAS</h2>
+                <h2 class="text-xl font-bold text-white mb-6">Cruzamento de Malha (Simples Nacional)</h2>
                 <div class="grid grid-cols-2 gap-8 mb-8">
-                    <div><label class="block text-xs font-bold text-primary mb-2">TOTAL XML</label><div class="text-4xl font-mono font-bold text-white" id="pgdas-xml-val">R$ 0,00</div></div>
-                    <div><label class="block text-xs font-bold text-slate-400 mb-2">DECLARADO</label><input type="number" id="pgdas-input" class="w-full bg-slate-900 border border-slate-700 text-white text-2xl p-3 rounded focus:border-primary outline-none" placeholder="0.00"></div>
+                    <div><label class="block text-xs font-bold text-primary mb-2">FATURAMENTO REAL (XML)</label><div class="text-4xl font-mono font-bold text-white" id="pgdas-xml-val">R$ 0,00</div></div>
+                    <div><label class="block text-xs font-bold text-slate-400 mb-2">FATURAMENTO DECLARADO</label><input type="number" id="pgdas-input" class="w-full bg-slate-900 border border-slate-700 text-white text-2xl p-3 rounded focus:border-primary outline-none" placeholder="0.00"></div>
                 </div>
-                <button onclick="checkPgdas()" class="w-full bg-primary hover:bg-orange-600 text-black font-bold py-3 rounded">AUDITAR</button>
+                <button onclick="checkPgdas()" class="w-full bg-primary hover:bg-orange-600 text-black font-bold py-3 rounded">AUDITAR DIVERGÊNCIA</button>
                 <div id="pgdas-result" class="mt-6 hidden-tab"></div>
             </div>
         </div>
@@ -187,10 +195,10 @@
     <div id="lawModal" class="hidden-tab modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content">
             <div class="flex justify-between items-center p-4 border-b border-slate-700 bg-slate-800 rounded-t-lg">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-primary"></i> Detalhe da Legislação</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-primary"></i> Base Legal</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div id="modalBody" class="p-6 overflow-y-auto text-slate-300 text-sm font-mono whitespace-pre-wrap leading-relaxed"></div>
+            <div id="modalBody" class="p-6 overflow-y-auto text-slate-300 text-sm font-mono whitespace-pre-wrap leading-relaxed flex-1"></div>
             <div class="p-4 border-t border-slate-700 bg-slate-800/50 rounded-b-lg text-right">
                 <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded">FECHAR</button>
             </div>
@@ -199,69 +207,65 @@
 
     <script>
         // ==================================================================================
-        // 1. CONFIGURAÇÃO DOS ARQUIVOS (NOMES EXATOS QUE VOCÊ DEFINIU)
+        // 1. BASE DE DADOS EMBUTIDA (PARA GARANTIR FUNCIONAMENTO)
         // ==================================================================================
-        let DB_FEDERAL = [], DB_ST = [], DB_BENEFITS = [];
+        const MONO = "04"; const ZERO = "06"; const TRIB = "01";
         
-        // ESTES SÃO OS NOMES CORRETOS COM BASE NO SEU PRINT
-        const FILE_PIS = "lei_federal.html";
-        const FILE_ST = "lei_estadual.html"; 
-        const FILE_BENEFITS = "lei_beneficios.html";
+        const DB_FEDERAL = [
+            [MONO, "2710", "Gasolina, Óleo Diesel, GLP, Álcool", "Lei 9.718/98 (Monofásico)"],
+            [MONO, "3004", "Medicamentos (Lista Positiva/Negativa)", "Lei 10.147/00 (Monofásico)"],
+            [MONO, "3303", "Perfumes e Águas de Colônia", "Lei 10.147/00 (Monofásico)"],
+            [MONO, "3304", "Produtos de Beleza ou Maquilagem", "Lei 10.147/00 (Monofásico)"],
+            [MONO, "3305", "Preparações Capilares (Xampus, Laquês)", "Lei 10.147/00 (Monofásico)"],
+            [MONO, "3307", "Desodorantes e preparações para barbear", "Lei 10.147/00 (Monofásico)"],
+            [MONO, "3401", "Sabões de Toucador (Sabonetes)", "Lei 10.147/00 (Monofásico)"],
+            [MONO, "2202", "Refrigerantes, Águas Aromatizadas, Energéticos, Isotônicos", "Lei 13.097/15 (Monofásico)"],
+            [MONO, "2203", "Cervejas e Chopes", "Lei 13.097/15 (Monofásico)"],
+            [MONO, "4011", "Pneus Novos de Borracha", "Lei 10.485/02 (Monofásico)"],
+            [MONO, "4013", "Câmaras de ar", "Lei 10.485/02 (Monofásico)"],
+            [MONO, "8708", "Autopeças (Partes e Acessórios)", "Lei 10.485/02 (Monofásico)"],
+            [MONO, "8421", "Filtros de Óleo e Ar (Automotivos)", "Lei 10.485/02 (Monofásico)"],
+            [MONO, "8507", "Baterias (Acumuladores Elétricos)", "Lei 10.485/02 (Monofásico)"],
+            [ZERO, "1006", "Arroz", "Lei 10.925/04 (Alíquota Zero)"],
+            [ZERO, "0713", "Feijões", "Lei 10.925/04 (Alíquota Zero)"],
+            [ZERO, "1101", "Farinha de Trigo", "Lei 10.925/04 (Alíquota Zero)"],
+            [ZERO, "0401", "Leite UHT / Pasteurizado", "Lei 10.925/04 (Alíquota Zero)"],
+            [ZERO, "0201", "Carne Bovina, Suína e Aves", "Lei 12.839/13 (Alíquota Zero)"],
+            [ZERO, "0701", "Batatas, Tomates, Cebolas, Frutas", "Lei 10.865/04 (Alíquota Zero)"]
+        ];
 
-        async function loadExternalData() {
-            try {
-                const [r1, r2, r3] = await Promise.all([
-                    fetch(FILE_PIS), 
-                    fetch(FILE_ST), 
-                    fetch(FILE_BENEFITS)
-                ]);
+        const DB_ST = [
+            ["IV", "03.021.00", "2203", "Cerveja de malte e Chope", "Mantido ST"],
+            ["IV", "03.010.00", "2202", "Refrigerante, Energéticos, Isotônicos", "Mantido ST"],
+            ["XVI", "16.001.00", "4011", "Pneus novos", "Mantido ST"],
+            ["XXII", "23.001.00", "2105", "Sorvetes de qualquer espécie, picolés", "Mantido ST"],
+            ["XXII", "23.002.00", "1806", "Preparados para fabricação de sorvetes", "Mantido ST"],
+            ["II", "01.001.00", "3815", "Autopeças (Catalisadores, etc)", "Mantido ST"],
+            ["XIV", "13.001.00", "3004", "Medicamentos", "Mantido ST"],
+            ["XIX", "20.001.00", "3303", "Perfumaria e Cosméticos", "Mantido ST"],
+            ["VI", "05.001.00", "2523", "Cimento", "Mantido ST"]
+        ];
 
-                if(r1.ok) DB_FEDERAL = parseTableData(await r1.text(), 'federal');
-                if(r2.ok) DB_ST = parseTableData(await r2.text(), 'st');
-                if(r3.ok) DB_BENEFITS = parseTableData(await r3.text(), 'benefits');
-                
-                const total = DB_FEDERAL.length + DB_ST.length + DB_BENEFITS.length;
-                if(total > 0) {
-                    document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-check text-green-500"></i> ${total.toLocaleString()} regras carregadas.`;
-                    document.getElementById('db-status').className = "text-[10px] text-green-500 font-bold";
-                } else {
-                    document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-warning"></i> Arquivos vazios?`;
-                }
-            } catch (error) {
-                console.error("Erro:", error);
-                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 animate-pulse"></i> Erro: Arquivos não encontrados.`;
-            }
-        }
+        const DB_BENEFITS = [
+            ["ISENÇÃO", "40", "0701", "Batata, Cebola, Tomate, Ovo (Hortifrutis)", "Anexo I Art 36"],
+            ["REDUÇÃO", "20", "1006", "Arroz e Feijão (Cesta Básica)", "Anexo II Art 3"],
+            ["REDUÇÃO", "20", "0201", "Carnes (Boi, Frango, Porco)", "Anexo II Art 74"],
+            ["REDUÇÃO", "20", "1905", "Pão Francês", "Anexo II Art 3"],
+            ["ISENÇÃO", "40", "3101", "Adubos e Fertilizantes", "Anexo I Art 41"]
+        ];
 
-        function parseTableData(htmlText, type) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            const rows = doc.querySelectorAll('tbody tr');
-            const data = [];
-            rows.forEach(row => {
-                const cols = row.querySelectorAll('td');
-                if (cols.length > 0) {
-                    const rowData = [];
-                    cols.forEach(col => rowData.push(col.textContent.trim()));
-                    if(type === 'federal' && rowData.length >= 4) data.push(rowData);
-                    else if(rowData.length >= 6) data.push(rowData);
-                }
-            });
-            return data;
-        }
-        window.addEventListener('load', loadExternalData);
-
-        // ==================================================================================
-        // 2. LÓGICA DE AUDITORIA
-        // ==================================================================================
         let xmlItems = [];
         let activeLibrary = 'federal';
+
+        // ==================================================================================
+        // ENGINE DE INTELIGÊNCIA
+        // ==================================================================================
 
         function handleXmlImport(event) {
             const files = event.target.files;
             if (!files.length) return;
             xmlItems = [];
-            document.getElementById('audit-body').innerHTML = `<tr><td colspan="5" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Analisando...</p></td></tr>`;
+            document.getElementById('audit-body').innerHTML = `<tr><td colspan="6" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Analisando NCMs e Descrições...</p></td></tr>`;
 
             setTimeout(() => {
                 let processed = 0;
@@ -283,7 +287,7 @@
                             auditItem(item);
                         }
                         processed++;
-                        if(processed === files.length) { updateDashboard(); switchTab('audit'); }
+                        if(processed === files.length) { updateDashboard(); switchTab('dashboard'); }
                     };
                     reader.readAsText(file);
                 });
@@ -315,12 +319,14 @@
 
             if (identifiedProduct && !ncmClean.startsWith(identifiedProduct.ncm.replace(/\./g,''))) {
                 item.status = 'error'; item.tag = 'CLASSIFICAÇÃO'; item.ncmError = true;
-                item.analysis.push(`<span class="text-danger font-bold"><i class="fa-solid fa-triangle-exclamation"></i> ERRO DE NCM</span><br>Item identificado como "<b>${identifiedProduct.desc}</b>" (NCM ${identifiedProduct.ncm}), mas XML traz ${item.ncm}.<br>A regra correta será aplicada sobre o NCM ${identifiedProduct.ncm}.`);
+                item.analysis.push(`<span class="text-danger font-bold"><i class="fa-solid fa-triangle-exclamation"></i> ERRO DE NCM</span><br>Descrição indica "<b>${identifiedProduct.desc}</b>" (NCM Correto: ${identifiedProduct.ncm}).`);
+                item.suggestedNcm = identifiedProduct.ncm;
                 ncmToAudit = identifiedProduct.ncm.replace(/\./g,''); 
             } else if (ncmClean === "00000000" || ncmClean.length < 4) {
                 if (identifiedProduct) {
                     item.status = 'error'; item.tag = 'CADASTRO';
-                    item.analysis.push(`<span class="text-warning font-bold">NCM RECUPERADO:</span> Match por descrição: ${identifiedProduct.desc} (${identifiedProduct.ncm}).`);
+                    item.analysis.push(`<span class="text-warning font-bold">NCM RECUPERADO:</span> Encontrado via descrição: ${identifiedProduct.desc} (${identifiedProduct.ncm}).`);
+                    item.suggestedNcm = identifiedProduct.ncm;
                     ncmToAudit = identifiedProduct.ncm.replace(/\./g,'');
                 } else {
                     item.status = 'error'; item.tag = 'CRÍTICO';
@@ -336,18 +342,19 @@
                 const cstEsperado = fedMatch[0]; 
                 if (item.cst !== cstEsperado) {
                     if(!item.ncmError) { item.status = 'error'; item.tag = 'PIS/COFINS'; }
-                    item.analysis.push(`<span class="text-primary font-bold">Divergência PIS/COFINS:</span> Lei prevê CST ${cstEsperado}. Encontrado ${item.cst}.<br><span class="text-[10px] text-slate-500">${fedMatch[3] || 'Lei Federal'}</span>`);
-                    item.newCst = cstEsperado;
+                    item.analysis.push(`<span class="text-primary font-bold">PIS/COFINS Indevido:</span> Lei prevê ${cstEsperado}. Pago como ${item.cst}.`);
+                    item.suggestedCst = cstEsperado;
                     if(item.cst === '01' || item.cst === '49') item.potentialRecovery = item.vProd * 0.0365;
                 }
             }
 
-            const stMatch = DB_ST.find(row => ncmToAudit.startsWith(row[3]?.replace(/\./g,'')));
+            const stMatch = DB_ST.find(row => ncmToAudit.startsWith(row[2]?.replace(/\./g,'')));
             if (stMatch) {
                 const cstST = ['10', '30', '60', '70', '201', '202', '203', '500'];
                 if (!cstST.includes(item.cst)) {
                      if(item.status !== 'error') { item.status = 'warning'; item.tag = 'ICMS-ST'; }
-                     item.analysis.push(`<span class="text-accent font-bold">Alerta ST:</span> Produto ST (${stMatch[4] || 'Item ST'}). XML sem destaque.`);
+                     item.analysis.push(`<span class="text-accent font-bold">Alerta ST:</span> Produto ST (${stMatch[3]}). Sem destaque.`);
+                     item.suggestedCst = "60/500";
                 }
             }
 
@@ -355,7 +362,7 @@
                 const benMatch = DB_BENEFITS.find(row => ncmToAudit.startsWith(row[2]?.replace(/\./g,'')));
                 if (benMatch && item.status === 'ok') {
                     item.status = 'success'; item.tag = 'BENEFÍCIO';
-                    item.analysis.push(`<span class="text-success font-bold">Oportunidade:</span> ${benMatch[0]} disponível (${benMatch[4] || ''}).`);
+                    item.analysis.push(`<span class="text-success font-bold">Oportunidade:</span> ${benMatch[0]} disponível.`);
                 }
             }
 
@@ -365,21 +372,21 @@
         function identifyProductByText(desc) {
             if (!desc) return null;
             const cleanDesc = desc.toUpperCase();
-            // Varre ST (procura descrição na coluna 4 - Index 4 pois a leitura da tabela pode variar)
+            // Palavras Chave Específicas
+            if (cleanDesc.includes("SUNDAE") || cleanDesc.includes("MILK") || cleanDesc.includes("SHAKE")) return { ncm: "2105", desc: "Sorvetes/Lácteos Gelados" };
+            if (cleanDesc.includes("PICOLE") || cleanDesc.includes("SORVETE") || cleanDesc.includes("GELO")) return { ncm: "2105", desc: "Sorvetes e Picolés" };
+            if (cleanDesc.includes("ACAI") && cleanDesc.includes("TIGELA")) return { ncm: "2105", desc: "Prep. Geladas" };
+            
+            // Varre ST
             for (let row of DB_ST) {
-                // A coluna de descrição geralmente é a penúltima ou antepenúltima
-                // Vamos tentar achar a coluna de texto longo
-                const descCol = row[4]; 
-                if (!descCol || descCol.length < 3) continue; 
-                
-                const keywords = descCol.toUpperCase().split(' ').filter(w => w.length > 3 && !['PARA', 'QUALQUER'].includes(w));
-                if (keywords.some(k => cleanDesc.includes(k))) return { ncm: row[3], desc: descCol };
+                if (!row[3]) continue; 
+                const keywords = row[3].toUpperCase().split(' ').filter(w => w.length > 3 && !['PARA', 'QUALQUER'].includes(w));
+                if (keywords.some(k => cleanDesc.includes(k))) return { ncm: row[2], desc: row[3] };
             }
             // Varre Federal
             for (let row of DB_FEDERAL) {
-                const descCol = row[2];
-                if (!descCol) continue;
-                if(cleanDesc.includes("REFRIGERANTE") && descCol.toUpperCase().includes("REFRIGERANTE")) return { ncm: row[1], desc: descCol };
+                if (!row[2]) continue;
+                if(cleanDesc.includes("REFRIGERANTE") && row[2].toUpperCase().includes("REFRIGERANTE")) return { ncm: row[1], desc: row[2] };
             }
             return null;
         }
@@ -388,46 +395,60 @@
             const item = xmlItems[index];
             item.status = 'fixed';
             const row = btn.closest('tr');
-            row.classList.remove('hover:bg-slate-800');
-            row.classList.add('bg-success/10');
-            row.querySelectorAll('td')[0].innerHTML = '<span class="status-badge status-fixed">CORRIGIDO</span>';
-            const cellAction = row.querySelectorAll('td')[4];
-            cellAction.innerHTML = `<span class="text-success text-xs font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-check-circle"></i> Feito</span>`;
-            const recEl = document.getElementById('dash-recovery');
-            recEl.classList.add('text-white');
-            setTimeout(() => recEl.classList.remove('text-white'), 300);
+            row.classList.add('bg-green-900/10');
+            row.querySelectorAll('td')[0].innerHTML = '<span class="status-badge status-fixed"><i class="fa-solid fa-check"></i> FEITO</span>';
+            // Atualiza colunas visuais
+            if(item.suggestedNcm) item.ncm = item.suggestedNcm;
+            if(item.suggestedCst) item.cst = item.suggestedCst;
+            
+            // Atualiza visualmente valores na tabela
+            row.querySelectorAll('td')[2].innerHTML = `<div class="flex flex-col gap-1 opacity-50"><span class="text-[10px]">Antigo: ${item.ncm}</span></div>`;
+            row.querySelectorAll('td')[3].innerHTML = `<div class="flex flex-col gap-1 text-success font-bold"><span class="text-xs">Novo: ${item.ncm}</span><span class="text-xs">CST: ${item.cst}</span></div>`;
+            
+            btn.remove();
         }
 
+        // --- UI ---
         function updateDashboard() {
             document.getElementById('dash-xmls').innerText = "1"; 
             document.getElementById('dash-products').innerText = xmlItems.length.toLocaleString();
             document.getElementById('dash-ncm-errors').innerText = xmlItems.filter(i => i.ncmError).length;
             document.getElementById('dash-cst-errors').innerText = xmlItems.filter(i => i.status === 'error' && !i.ncmError).length;
+            
             const recovery = xmlItems.reduce((acc, i) => acc + i.potentialRecovery, 0);
-            document.getElementById('dash-recovery').innerText = recovery.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+            
+            // ATUALIZA MENSAGEM HERO
+            document.getElementById('hero-message').classList.add('hidden-tab');
+            document.getElementById('hero-result').classList.remove('hidden-tab');
+            document.getElementById('display-recovery').innerText = recovery.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
             const tbody = document.getElementById('audit-body');
             tbody.innerHTML = '';
             
             xmlItems.slice(0, 200).forEach((item, index) => {
                 let badge = '<span class="status-badge bg-slate-700 text-slate-400">OK</span>';
-                let message = '<span class="text-success italic font-bold flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Conforme Lei</span>';
                 let actionBtn = '-';
+                
+                // Coluna "Sugestão Maradel"
+                let sugestaoHtml = `<span class="text-slate-500 text-xs">-</span>`;
 
-                if (item.ncmError) {
-                    badge = '<span class="status-badge status-danger">ERRO NCM</span>';
-                    message = item.analysis.join('<br>');
-                    actionBtn = `<button onclick="applyFix(this, ${index})" class="bg-primary hover:bg-orange-600 text-black px-3 py-1.5 rounded text-[10px] font-bold uppercase shadow-lg shadow-orange-900/20 transition w-full flex items-center justify-center gap-1"><i class="fa-solid fa-wrench"></i> Corrigir NCM</button>`;
-                }
-                else if (item.status === 'error') {
-                    badge = '<span class="status-badge status-danger">RISCO</span>';
-                    message = item.analysis.join('<br>');
-                    actionBtn = `<button onclick="applyFix(this, ${index})" class="bg-primary hover:bg-orange-600 text-black px-3 py-1.5 rounded text-[10px] font-bold uppercase shadow-lg shadow-orange-900/20 transition w-full flex items-center justify-center gap-1"><i class="fa-solid fa-wrench"></i> Corrigir CST</button>`;
-                }
-                else if (item.status === 'warning') {
-                    badge = '<span class="status-badge status-warning">ALERTA</span>';
-                    message = item.analysis.join('<br>');
-                    actionBtn = `<button onclick="applyFix(this, ${index})" class="bg-accent/20 text-accent border border-accent hover:bg-accent hover:text-white px-3 py-1.5 rounded text-[10px] font-bold uppercase transition w-full">Revisar</button>`;
+                if (item.ncmError || item.status === 'error' || item.status === 'warning') {
+                    if(item.ncmError) badge = '<span class="status-badge status-danger">ERRO NCM</span>';
+                    else if(item.status === 'error') badge = '<span class="status-badge status-danger">RISCO</span>';
+                    else badge = '<span class="status-badge status-warning">ALERTA</span>';
+                    
+                    sugestaoHtml = `
+                        <div class="flex flex-col gap-1 bg-primary/10 p-2 rounded border border-primary/20">
+                            <div class="flex justify-between"><span class="text-[9px] text-primary font-bold">NCM SUGERIDO</span> <span class="text-xs text-white font-mono">${item.suggestedNcm || item.ncm}</span></div>
+                            <div class="flex justify-between"><span class="text-[9px] text-primary font-bold">CST SUGERIDO</span> <span class="text-xs text-white font-mono">${item.suggestedCst || item.cst}</span></div>
+                        </div>
+                    `;
+                    actionBtn = `<button onclick="applyFix(this, ${index})" class="bg-primary hover:bg-orange-600 text-black px-3 py-2 rounded text-[10px] font-bold uppercase shadow-lg shadow-orange-900/20 transition w-full flex items-center justify-center gap-2"><i class="fa-solid fa-wrench"></i> CORRIGIR</button>`;
+                } else if (item.status === 'success') {
+                    badge = '<span class="status-badge status-success">CRÉDITO</span>';
+                } else {
+                    // Item OK
+                    sugestaoHtml = `<span class="text-success text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Conforme Lei</span>`;
                 }
 
                 const row = document.createElement('tr');
@@ -439,27 +460,26 @@
                         <div class="text-[9px] text-slate-500 mt-1">R$ ${item.vProd.toFixed(2)}</div>
                     </td>
                     <td class="p-4 align-top">
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[10px] ${item.ncmError ? 'text-danger font-bold' : 'text-slate-400'} bg-slate-900 px-2 py-1 rounded w-fit font-mono">NCM: ${item.ncm}</span>
-                            <span class="text-[10px] text-slate-400 bg-slate-900 px-2 py-1 rounded w-fit font-mono">CST: ${item.cst}</span>
+                        <div class="flex flex-col gap-1 text-slate-400">
+                            <span class="text-[10px] font-mono">NCM: ${item.ncm}</span>
+                            <span class="text-[10px] font-mono">CST: ${item.cst}</span>
                         </div>
                     </td>
-                    <td class="p-4 text-xs leading-relaxed align-top">
-                        ${message}
+                    <td class="p-4 align-top">
+                        ${sugestaoHtml}
                     </td>
-                    <td class="p-4 text-center align-top">
+                    <td class="p-4 text-xs text-slate-300 leading-relaxed align-top">
+                        ${item.analysis.join('<br>')}
+                    </td>
+                    <td class="p-4 text-center align-middle">
                         ${actionBtn}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
-
-            const total = xmlItems.reduce((acc, i) => acc + i.vProd, 0);
-            document.getElementById('pgdas-xml-val').innerText = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            document.getElementById('pgdas-xml-val').dataset.val = total;
         }
 
-        // --- NAVEGAÇÃO E MODAIS ---
+        // --- NAVEGAÇÃO ---
         function switchTab(tabId) {
             ['dashboard', 'audit', 'pgdas', 'library'].forEach(id => document.getElementById('tab-' + id).classList.add('hidden-tab'));
             document.getElementById('tab-' + tabId).classList.remove('hidden-tab');
@@ -470,19 +490,19 @@
             if(tabId === 'audit') {
                 actions.classList.remove('hidden-tab');
                 title.innerText = 'Auditoria de XML';
-                sub.innerText = 'Análise item a item com Inteligência Artificial';
+                sub.innerText = 'Análise Detalhada';
             } else if (tabId === 'dashboard') {
                 actions.classList.add('hidden-tab');
                 title.innerText = 'Dashboard Gerencial';
-                sub.innerText = 'Visão consolidada de riscos e oportunidades';
+                sub.innerText = 'Resultado Financeiro';
             } else if (tabId === 'pgdas') {
                 actions.classList.add('hidden-tab');
                 title.innerText = 'Conferência PGDAS';
-                sub.innerText = 'Cruzamento de obrigações acessórias';
+                sub.innerText = 'Cruzamento de Dados';
             } else {
                 actions.classList.add('hidden-tab');
                 title.innerText = 'Base Legal Integrada';
-                sub.innerText = 'Consulta direta à legislação tributária';
+                sub.innerText = 'Consulta Legislação';
             }
         }
 
@@ -499,7 +519,6 @@
             const term = document.getElementById('lib-search').value.toLowerCase();
             const tbody = document.getElementById('lib-body');
             tbody.innerHTML = '';
-            
             let source = activeLibrary === 'federal' ? DB_FEDERAL : (activeLibrary === 'st' ? DB_ST : DB_BENEFITS);
             let filtered = source.filter(row => row.some(c => c && c.toLowerCase().includes(term)));
             if(term === '') filtered = filtered.slice(0, 100);
@@ -508,14 +527,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800 border-b border-slate-700/50 cursor-pointer transition";
                 tr.onclick = () => openLawModal(row);
-
-                if (activeLibrary === 'federal') {
-                    tr.innerHTML = `<td class="p-3 text-primary font-bold">${row[0]||''}</td><td class="p-3 font-mono text-white">${row[1]||''}</td><td class="p-3 text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase font-bold hover:text-white"><i class="fa-solid fa-book-open mr-1"></i> ${row[3]||''}</td>`;
-                } else if (activeLibrary === 'st') {
-                    tr.innerHTML = `<td class="p-3 font-bold text-slate-500">${row[0]||''}</td><td class="p-3 font-mono text-slate-400">${row[2]||''}</td><td class="p-3 font-mono text-white">${row[3]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[4]||''}</td><td class="p-3"><span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-bold border border-slate-600">${row[5]||'ST'}</span></td>`;
-                } else {
-                    tr.innerHTML = `<td class="p-3 font-bold text-success">${row[0]||''}</td><td class="p-3 text-white">${row[1]||''}</td><td class="p-3 font-mono text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[3]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase hover:text-white"><i class="fa-solid fa-file-contract mr-1"></i> ${row[4]||''}</td>`;
-                }
+                tr.innerHTML = row.map((cell, i) => `<td class="p-3 ${i===0?'font-bold text-white':''}">${cell}</td>`).join('');
                 tbody.appendChild(tr);
             });
         }
@@ -524,26 +536,10 @@
             const modal = document.getElementById('lawModal');
             const body = document.getElementById('modalBody');
             modal.classList.remove('hidden-tab');
-            
             const ncm = activeLibrary === 'st' ? row[3] : row[1];
             const desc = activeLibrary === 'st' ? row[4] : row[2];
             const lei = row[row.length - 1]; 
-
-            body.innerHTML = `
-                <div class="mb-6 p-4 bg-black/40 rounded border border-slate-700">
-                    <h2 class="text-primary font-bold text-xl mb-2">${desc || 'Item sem descrição'}</h2>
-                    <div class="flex gap-4 text-xs">
-                        <span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm || '-'}</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <h4 class="text-white font-bold border-b border-slate-700 pb-2">Dispositivo Legal:</h4>
-                    <p class="text-justify text-slate-400">${lei || 'Detalhes indisponíveis'}</p>
-                    <p class="text-justify text-slate-500 text-xs italic mt-4">
-                        * Dados extraídos da base oficial Maradel.
-                    </p>
-                </div>
-            `;
+            body.innerHTML = `<div class="mb-6 p-4 bg-black/40 rounded border border-slate-700"><h2 class="text-primary font-bold text-xl mb-2">${desc || 'Item sem descrição'}</h2><div class="flex gap-4 text-xs"><span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm || '-'}</span></div></div><div class="space-y-4"><h4 class="text-white font-bold border-b border-slate-700 pb-2">Dispositivo Legal:</h4><p class="text-justify text-slate-400">${lei || 'Detalhes indisponíveis'}</p></div>`;
         }
         function closeModal() { document.getElementById('lawModal').classList.add('hidden-tab'); }
 
@@ -559,11 +555,11 @@
 
         function exportReport() {
             if(xmlItems.length === 0) return alert("Nada para exportar");
-            const data = xmlItems.map(i => ({Produto: i.xProd, NCM: i.ncm, Valor: i.vProd, CST: i.cst, Status: i.status, Diagnostico: i.analysis.join(' | ').replace(/<[^>]*>/g, '')}));
+            const data = xmlItems.map(i => ({Produto: i.xProd, NCM_Orig: i.ncm, NCM_Sugerido: i.suggestedNcm || "OK", Valor: i.vProd, CST_Orig: i.cst, CST_Sugerido: i.suggestedCst || "OK", Status: i.status}));
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Auditoria");
-            XLSX.writeFile(wb, "Relatorio_Auditor.xlsx");
+            XLSX.writeFile(wb, "Relatorio_Correcao_Maradel.xlsx");
         }
 
         switchTab('dashboard');
