@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUDITOR FISCAL PRO | MARADEL</title>
+    <title>AUDITOR FISCAL PRO | MARADEL SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.css"></script>
@@ -32,17 +32,17 @@
         .glass-panel { background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(255,255,255,0.05); }
         .table-head { position: sticky; top: 0; z-index: 20; background: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         
-        /* Inputs Editáveis na Tabela */
-        .edit-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 4px 8px; border-radius: 4px; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; transition: all 0.2s; }
+        /* Inputs Editáveis */
+        .edit-input { background: #020617; border: 1px solid #334155; color: white; padding: 6px; border-radius: 4px; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; transition: all 0.2s; text-align: center; }
         .edit-input:focus { border-color: #f97316; outline: none; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
-        .edit-input.changed { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
         .edit-input.error { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .edit-input.suggested { border-color: #10b981; color: #10b981; font-weight: bold; }
 
-        .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; display: inline-block; min-width: 70px; text-align: center; }
+        .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; display: inline-block; min-width: 80px; text-align: center; }
         .status-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
         .status-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
         .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .status-fixed { background: #3b82f6; color: white; }
+        .status-fixed { background: #3b82f6; color: white; border: 1px solid #2563eb; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
@@ -51,7 +51,10 @@
         
         .hidden-tab { display: none !important; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: #1e293b; width: 90%; max-width: 900px; max-height: 85vh; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .modal-content { background: #1e293b; width: 900px; max-height: 85vh; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        
+        /* Checkbox Customizado */
+        .custom-checkbox { accent-color: #f97316; width: 16px; height: 16px; cursor: pointer; }
     </style>
 </head>
 <body class="flex h-screen w-full">
@@ -96,7 +99,8 @@
             <div id="audit-actions" class="hidden-tab flex gap-2">
                 <input type="file" id="xmlInput" multiple accept=".xml" class="hidden" onchange="handleXmlImport(event)">
                 <button onclick="document.getElementById('xmlInput').click()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-cloud-arrow-up"></i> IMPORTAR XMLs</button>
-                <button onclick="exportReport()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-green-900/20"><i class="fa-solid fa-file-excel"></i> EXPORTAR CORREÇÕES</button>
+                <button onclick="applyBatchCorrection()" id="btn-batch" class="bg-primary hover:bg-orange-600 text-black font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-orange-900/20 hidden-tab"><i class="fa-solid fa-check-double"></i> CORRIGIR EM LOTE</button>
+                <button onclick="exportReport()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-green-900/20"><i class="fa-solid fa-file-excel"></i> RELATÓRIO CORREÇÃO</button>
             </div>
         </header>
 
@@ -113,21 +117,21 @@
                             Descubra o <span class="text-primary">Dinheiro Oculto</span> nos seus cadastros.
                         </h1>
                         <p class="text-slate-400 text-sm max-w-2xl">
-                            Importe seus XMLs e deixe nossa IA cruzar os dados com a legislação para identificar créditos recuperáveis e riscos fiscais.
+                            Importe seus XMLs. Nossa IA cruza seus produtos com a Lei Federal e Estadual para identificar oportunidades de recuperação tributária imediata.
                         </p>
                     </div>
 
                     <div id="hero-result" class="hidden-tab mt-6 pt-6 border-t border-slate-700/50">
                         <h1 class="text-3xl font-light text-white mb-2 leading-tight">
-                            Com a <strong class="text-primary">Maradel</strong>, sua empresa tem <span class="text-success font-black text-4xl" id="display-recovery">R$ 0,00</span> a recuperar.
+                            Com a <strong class="text-primary">Maradel</strong>, você tem <span class="text-success font-black text-4xl" id="display-recovery">R$ 0,00</span> a recuperar.
                         </h1>
                         <p class="text-slate-300 text-sm max-w-3xl mt-4 leading-relaxed">
-                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Identificamos <strong><span id="display-errors-count">0</span></strong> produtos com NCM/CST incorretos que geraram pagamento indevido.<br>
-                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Utilize a tabela de auditoria para corrigir os cadastros e solicitar a restituição.
+                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Identificamos <strong><span id="display-errors-count">0</span></strong> produtos com NCM/CST incorretos.<br>
+                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Utilize a correção em lote para ajustar rapidamente.
                         </p>
                         <div class="mt-8">
                             <button onclick="switchTab('audit')" class="bg-white hover:bg-slate-200 text-dark font-bold py-3 px-8 rounded shadow-xl transition flex items-center gap-3 text-sm uppercase tracking-wide">
-                                EDITAR E CORRIGIR AGORA <i class="fa-solid fa-arrow-right text-primary"></i>
+                                CORRIGIR AGORA <i class="fa-solid fa-arrow-right text-primary"></i>
                             </button>
                         </div>
                     </div>
@@ -136,8 +140,8 @@
 
             <div class="grid grid-cols-4 gap-6">
                 <div class="glass-panel p-5 rounded-xl border-l-4 border-slate-500"><p class="text-[10px] uppercase text-slate-400 font-bold">XMLs Processados</p><h3 class="text-3xl font-black text-white mt-1" id="dash-xmls">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-danger"><p class="text-[10px] uppercase text-slate-400 font-bold">Cadastros Errados</p><h3 class="text-3xl font-black text-danger mt-1" id="dash-ncm-errors">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-warning"><p class="text-[10px] uppercase text-slate-400 font-bold">Tributação Indevida</p><h3 class="text-3xl font-black text-warning mt-1" id="dash-cst-errors">0</h3></div>
+                <div class="glass-panel p-5 rounded-xl border-l-4 border-danger"><p class="text-[10px] uppercase text-slate-400 font-bold">NCM Incorreto</p><h3 class="text-3xl font-black text-danger mt-1" id="dash-ncm-errors">0</h3></div>
+                <div class="glass-panel p-5 rounded-xl border-l-4 border-warning"><p class="text-[10px] uppercase text-slate-400 font-bold">Erro Tributário</p><h3 class="text-3xl font-black text-warning mt-1" id="dash-cst-errors">0</h3></div>
                 <div class="glass-panel p-5 rounded-xl border-l-4 border-success"><p class="text-[10px] uppercase text-slate-400 font-bold">Itens Auditados</p><h3 class="text-3xl font-black text-success mt-1" id="dash-products">0</h3></div>
             </div>
         </div>
@@ -145,24 +149,32 @@
         <div id="tab-audit" class="flex-1 p-6 hidden-tab flex flex-col overflow-hidden">
             <div class="flex-1 glass-panel rounded-xl border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
                 <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-primary"></i> Ajuste de Classificação Fiscal</h3>
-                    <div class="text-xs text-slate-400 italic">Edite os campos NCM/CST conforme necessidade e clique em confirmar.</div>
+                    <div class="flex gap-4 items-center">
+                        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-primary"></i> Ajuste Fino</h3>
+                        <div class="flex gap-2">
+                            <button onclick="filterAudit('all')" class="text-[10px] px-2 py-1 bg-slate-700 rounded text-white border border-slate-600 hover:bg-slate-600">Todos</button>
+                            <button onclick="filterAudit('error')" class="text-[10px] px-2 py-1 bg-danger/20 rounded text-danger border border-danger hover:bg-danger/30">Erros</button>
+                            <button onclick="filterAudit('warning')" class="text-[10px] px-2 py-1 bg-warning/20 rounded text-warning border border-warning hover:bg-warning/30">Alertas</button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-400 italic">Selecione os itens para correção em lote.</div>
                 </div>
                 <div class="flex-1 overflow-auto bg-slate-900/50">
                     <table class="w-full text-left text-xs">
                         <thead class="table-head text-slate-300 uppercase font-bold text-[10px]">
                             <tr>
+                                <th class="p-3 w-10 text-center"><input type="checkbox" id="check-all" onchange="toggleSelectAll(this)" class="custom-checkbox"></th>
                                 <th class="p-3 w-20 text-center">Status</th>
                                 <th class="p-3 w-1/4">Produto (XML)</th>
-                                <th class="p-3 w-32">NCM (XML/Sugerido)</th>
+                                <th class="p-3 w-32">NCM (8 Dígitos)</th>
                                 <th class="p-3 w-24">CST PIS</th>
-                                <th class="p-3 w-24">CST ICMS</th>
-                                <th class="p-3 text-slate-400 w-1/4">Diagnóstico Legal</th>
+                                <th class="p-3 w-24">CSOSN ICMS</th>
+                                <th class="p-3 text-slate-400 w-1/4">Diagnóstico</th>
                                 <th class="p-3 w-24 text-center">Ação</th>
                             </tr>
                         </thead>
                         <tbody id="audit-body" class="divide-y divide-slate-800 text-slate-300">
-                            <tr><td colspan="7" class="p-20 text-center text-slate-500">Aguardando importação de XML...</td></tr>
+                            <tr><td colspan="8" class="p-20 text-center text-slate-500">Aguardando importação de XML...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -212,37 +224,25 @@
 
     <script>
         // ==================================================================================
-        // 1. CARREGAMENTO DOS ARQUIVOS EXTERNOS (NOMES EXATOS DO REPOSITÓRIO)
+        // 1. CARREGAMENTO DOS ARQUIVOS EXTERNOS
         // ==================================================================================
         let DB_FEDERAL = [], DB_ST = [], DB_BENEFITS = [];
-        
-        const FILE_PIS = "lei_federal.html"; 
-        const FILE_ST = "lei_estadual.html"; 
-        const FILE_BENEFITS = "lei_beneficios.html";
+        const FILE_PIS = "lei_federal.html"; const FILE_ST = "lei_estadual.html"; const FILE_BENEFITS = "lei_beneficios.html";
 
         async function loadExternalData() {
             try {
-                // Carrega todos os arquivos em paralelo
-                const [r1, r2, r3] = await Promise.all([
-                    fetch(FILE_PIS), 
-                    fetch(FILE_ST), 
-                    fetch(FILE_BENEFITS)
-                ]);
-
+                const [r1, r2, r3] = await Promise.all([fetch(FILE_PIS), fetch(FILE_ST), fetch(FILE_BENEFITS)]);
                 if(r1.ok) DB_FEDERAL = parseTableData(await r1.text(), 'federal');
                 if(r2.ok) DB_ST = parseTableData(await r2.text(), 'st');
                 if(r3.ok) DB_BENEFITS = parseTableData(await r3.text(), 'benefits');
-                
                 const total = DB_FEDERAL.length + DB_ST.length + DB_BENEFITS.length;
-                if (total > 0) {
+                if(total > 0) {
                     document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-check text-green-500"></i> ${total.toLocaleString()} regras carregadas.`;
                     document.getElementById('db-status').className = "text-[10px] text-green-500 font-bold";
-                } else {
-                    throw new Error("Bases vazias");
                 }
             } catch (error) {
-                console.error("Erro carregamento:", error);
-                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Erro ao ler base de dados.`;
+                console.error("Erro:", error);
+                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Erro leitura.`;
             }
         }
 
@@ -256,8 +256,8 @@
                 if (cols.length > 0) {
                     const rowData = [];
                     cols.forEach(col => rowData.push(col.textContent.trim()));
-                    // Filtro de integridade simples
-                    if (rowData.length > 2) data.push(rowData);
+                    if(type === 'federal' && rowData.length >= 4) data.push(rowData);
+                    else if(rowData.length >= 6) data.push(rowData);
                 }
             });
             return data;
@@ -269,12 +269,13 @@
         // ==================================================================================
         let xmlItems = [];
         let activeLibrary = 'federal';
+        let currentFilter = 'all';
 
         function handleXmlImport(event) {
             const files = event.target.files;
             if (!files.length) return;
             xmlItems = [];
-            document.getElementById('audit-body').innerHTML = `<tr><td colspan="7" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Analisando NCMs, CSTs e Descrições...</p></td></tr>`;
+            document.getElementById('audit-body').innerHTML = `<tr><td colspan="8" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Analisando...</p></td></tr>`;
 
             setTimeout(() => {
                 let processed = 0;
@@ -287,20 +288,18 @@
                         for (let det of dets) {
                             const prod = det.getElementsByTagName("prod")[0];
                             const imposto = det.getElementsByTagName("imposto")[0];
-                            
-                            // Extração de CSTs separados
                             const cstPis = getTagValue(imposto, ["PIS", "CST"]) || "01";
                             const cstIcms = getTagValue(imposto, ["ICMS", "CSOSN", "CST"]) || "102";
-
                             const item = {
                                 xProd: prod.getElementsByTagName("xProd")[0]?.textContent || "SEM NOME",
                                 ncm: prod.getElementsByTagName("NCM")[0]?.textContent || "00000000",
                                 vProd: parseFloat(prod.getElementsByTagName("vProd")[0]?.textContent || 0),
                                 cstPis: cstPis,
                                 cstIcms: cstIcms,
-                                suggestedNcm: "", // Será preenchido pela IA
+                                suggestedNcm: "", 
                                 suggestedCstPis: "",
-                                suggestedCstIcms: ""
+                                suggestedCstIcms: "",
+                                selected: false // Checkbox
                             };
                             auditItem(item);
                         }
@@ -312,10 +311,8 @@
             }, 800);
         }
 
-        // Função melhorada para pegar tags profundas
         function getTagValue(parent, path) {
             if (!parent) return null;
-            // Simplificação: procura a tag CST ou CSOSN em qualquer nível dentro do imposto
             const tags = parent.getElementsByTagName("*");
             for (let i = 0; i < tags.length; i++) {
                 if (path.includes(tags[i].tagName)) return tags[i].textContent;
@@ -332,33 +329,29 @@
             let ncmClean = item.ncm.replace(/\./g, '').trim(); 
             const descClean = item.xProd.toUpperCase();
 
-            // 1. IA DE TEXTO (Para corrigir NCM 0000 ou errados)
+            // 1. INTELIGÊNCIA DE NCM
             let identifiedProduct = identifyProductByText(descClean);
             
-            // Se o NCM estiver zerado OU for muito curto OU se a IA achou um NCM diferente do XML
             if (ncmClean === "00000000" || ncmClean.length < 4 || (identifiedProduct && !ncmClean.startsWith(identifiedProduct.ncm.replace(/\./g,'')))) {
-                
                 if (identifiedProduct) {
                     item.status = 'error'; 
                     item.ncmError = true;
-                    item.suggestedNcm = identifiedProduct.ncm;
-                    ncmClean = identifiedProduct.ncm.replace(/\./g,''); // Usa o NCM da IA para auditar impostos
+                    item.suggestedNcm = identifiedProduct.ncm.replace(/\./g, '');
+                    ncmClean = item.suggestedNcm;
                     item.analysis.push(`<span class="text-warning font-bold">NCM Incorreto:</span> Identificado como "${identifiedProduct.desc}" (NCM ${identifiedProduct.ncm}).`);
                 } else if (ncmClean === "00000000") {
                     item.status = 'error'; 
                     item.ncmError = true;
-                    item.suggestedNcm = ""; // Deixa vazio para usuário preencher
-                    item.analysis.push(`<span class="text-danger font-bold">NCM INVÁLIDO:</span> Produto não identificado na base legal.`);
+                    item.suggestedNcm = ""; // Vazio para obrigar edição
+                    item.analysis.push(`<span class="text-danger font-bold">NCM INVÁLIDO:</span> Produto não identificado. Preencha manualmente.`);
                     xmlItems.push(item);
-                    return; // Aborta auditoria tributária se não tem NCM
+                    return; 
                 }
             } else {
-                item.suggestedNcm = item.ncm; // NCM Original parece ok
+                item.suggestedNcm = item.ncm;
             }
 
-            // 2. AUDITORIA TRIBUTÁRIA (Usando o NCM validado)
-            
-            // Federal (PIS/COFINS) - Procura NCM na coluna 1
+            // 2. AUDITORIA TRIBUTÁRIA
             const fedMatch = DB_FEDERAL.find(row => ncmClean.startsWith(row[1]?.replace(/\./g,'')));
             if (fedMatch) {
                 const cstEsperado = fedMatch[0]; 
@@ -369,44 +362,33 @@
                     if(['01','02','03'].includes(item.cstPis)) item.potentialRecovery += item.vProd * 0.0365;
                 }
             } else {
-                item.suggestedCstPis = "01"; // Padrão se não achar
+                item.suggestedCstPis = "01";
             }
 
-            // Estadual (ST) - Procura NCM na coluna 3
             const stMatch = DB_ST.find(row => ncmClean.startsWith(row[3]?.replace(/\./g,'')));
             if (stMatch) {
-                // Lista de CSTs que indicam ST (10, 30, 60, 70, 201, 202, 203, 500)
                 const cstST = ['10', '30', '60', '70', '201', '202', '203', '500'];
-                item.suggestedCstIcms = "500"; // Sugere cobrado anteriormente
+                item.suggestedCstIcms = "500";
                 if (!cstST.includes(item.cstIcms)) {
                      if(item.status !== 'error') item.status = 'warning';
                      item.analysis.push(`<span class="text-accent font-bold">ICMS ST:</span> Produto ST (${stMatch[4]}).`);
                 }
             } else {
-                item.suggestedCstIcms = "102"; // Padrão Simples Nacional
+                item.suggestedCstIcms = "102";
             }
 
             xmlItems.push(item);
         }
 
-        // --- INTELLIGENCE CORE ---
         function identifyProductByText(desc) {
             if (!desc) return null;
             const cleanDesc = desc.toUpperCase();
-            
-            // 1. Busca na base ST (Prioridade - Descrição na coluna 4)
             for (let row of DB_ST) {
                 if (!row[4]) continue; 
-                // Tokeniza a descrição da lei (palavras chave)
                 const keywords = row[4].toUpperCase().split(' ').filter(w => w.length > 3 && !['PARA', 'QUALQUER', 'OUTROS'].includes(w));
-                // Se a descrição do produto tem a palavra chave da lei
                 if (keywords.some(k => cleanDesc.includes(k))) return { ncm: row[3], desc: row[4] };
-                
-                // Regras Manuais (Exemplos do Usuário)
-                if (cleanDesc.includes("SUNDAE") || cleanDesc.includes("MILK") || cleanDesc.includes("SHAKE")) return { ncm: "2105.00", desc: "Sorvetes" };
                 if (cleanDesc.includes("PICOLE") && row[4].toUpperCase().includes("SORVETE")) return { ncm: "2105.00", desc: "Sorvetes e Picolés" };
             }
-            // 2. Busca na Federal (Descrição na coluna 2)
             for (let row of DB_FEDERAL) {
                 if (!row[2]) continue;
                 if(cleanDesc.includes("REFRIGERANTE") && row[2].toUpperCase().includes("REFRIGERANTE")) return { ncm: row[1], desc: row[2] };
@@ -414,30 +396,63 @@
             return null;
         }
 
-        // --- INTERAÇÃO DO USUÁRIO ---
+        // --- FUNÇÕES DE LOTE E UI ---
+        function toggleSelectAll(source) {
+            const checkboxes = document.getElementsByClassName('row-check');
+            for(let i=0; i<checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+                xmlItems[checkboxes[i].dataset.index].selected = source.checked;
+            }
+            toggleBatchBtn();
+        }
+
+        function toggleRow(checkbox, index) {
+            xmlItems[index].selected = checkbox.checked;
+            toggleBatchBtn();
+        }
+
+        function toggleBatchBtn() {
+            const anyChecked = xmlItems.some(i => i.selected);
+            const btn = document.getElementById('btn-batch');
+            anyChecked ? btn.classList.remove('hidden-tab') : btn.classList.add('hidden-tab');
+        }
+
+        function applyBatchCorrection() {
+            let count = 0;
+            xmlItems.forEach((item, index) => {
+                if(item.selected && (item.suggestedNcm || item.suggestedCstPis || item.suggestedCstIcms)) {
+                    if(item.suggestedNcm && item.suggestedNcm !== "") item.ncm = item.suggestedNcm;
+                    if(item.suggestedCstPis) item.cstPis = item.suggestedCstPis;
+                    if(item.suggestedCstIcms) item.cstIcms = item.suggestedCstIcms;
+                    item.status = 'fixed';
+                    item.selected = false;
+                    count++;
+                }
+            });
+            document.getElementById('check-all').checked = false;
+            toggleBatchBtn();
+            updateDashboard();
+            alert(`${count} itens corrigidos com sucesso!`);
+        }
+
         function confirmRow(btn, index) {
             const row = btn.closest('tr');
-            
-            // Pega os valores dos inputs (o usuário pode ter editado)
-            const newNcm = row.querySelector('.input-ncm').value;
-            const newPis = row.querySelector('.input-pis').value;
-            const newIcms = row.querySelector('.input-icms').value;
-
-            // Atualiza o objeto na memória
-            xmlItems[index].ncm = newNcm;
-            xmlItems[index].cstPis = newPis;
-            xmlItems[index].cstIcms = newIcms;
+            xmlItems[index].ncm = row.querySelector('.input-ncm').value;
+            xmlItems[index].cstPis = row.querySelector('.input-pis').value;
+            xmlItems[index].cstIcms = row.querySelector('.input-icms').value;
             xmlItems[index].status = 'fixed';
-
-            // Feedback Visual
+            updateDashboard(false);
+            
+            // Visual feedback
             row.classList.add('bg-success/10');
             row.querySelector('.status-cell').innerHTML = '<span class="status-badge status-fixed"><i class="fa-solid fa-check"></i> FEITO</span>';
             btn.innerHTML = '<i class="fa-solid fa-check"></i>';
             btn.className = "text-success font-bold text-lg";
-            btn.disabled = true;
+        }
 
-            // Atualiza Dashboard (Valor recuperado pode mudar)
-            updateDashboard(false); // false para não redesenhar tabela
+        function filterAudit(filterType) {
+            currentFilter = filterType;
+            updateDashboard(true);
         }
 
         function updateDashboard(redrawTable = true) {
@@ -450,8 +465,6 @@
             const recFmt = recovery.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
             document.getElementById('dash-recovery').innerText = recFmt;
             document.getElementById('display-recovery').innerText = recFmt;
-
-            // Mostra mensagem de venda no dashboard
             document.getElementById('hero-message').classList.add('hidden-tab');
             document.getElementById('hero-result').classList.remove('hidden-tab');
 
@@ -460,39 +473,50 @@
             const tbody = document.getElementById('audit-body');
             tbody.innerHTML = '';
             
-            xmlItems.slice(0, 150).forEach((item, index) => {
+            // Filtro de Visualização
+            let visibleItems = xmlItems;
+            if(currentFilter === 'error') visibleItems = xmlItems.filter(i => i.status === 'error' || i.ncmError);
+            if(currentFilter === 'warning') visibleItems = xmlItems.filter(i => i.status === 'warning');
+
+            visibleItems.slice(0, 200).forEach((item, index) => {
+                // Mapeia index original se estiver filtrado (para edição funcionar)
+                const originalIndex = xmlItems.indexOf(item);
+
                 let badge = '<span class="status-badge bg-slate-700 text-slate-400">OK</span>';
                 let diag = '<span class="text-success italic font-bold flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Conforme Lei</span>';
-                let inputClass = "edit-input";
-
-                if (item.status === 'error' || item.ncmError) {
+                let inputClassNcm = "edit-input";
+                
+                if (item.status === 'fixed') {
+                    badge = '<span class="status-badge status-fixed">FEITO</span>';
+                    diag = '<span class="text-success">Item corrigido manualmente.</span>';
+                }
+                else if (item.status === 'error' || item.ncmError) {
                     badge = '<span class="status-badge status-danger">ERRO</span>';
                     diag = item.analysis.join('<br>');
-                    inputClass += " border-primary text-primary font-bold";
+                    if(item.suggestedNcm) inputClassNcm += " suggested";
                 } else if (item.status === 'warning') {
                     badge = '<span class="status-badge status-warning">ALERTA</span>';
                     diag = item.analysis.join('<br>');
                 }
 
-                // Inputs pré-preenchidos com a sugestão da IA ou o original
-                const valNcm = item.suggestedNcm || item.ncm;
-                const valPis = item.suggestedCstPis || item.cstPis;
-                const valIcms = item.suggestedCstIcms || item.cstIcms;
-
-                // Se NCM for 0000 e sem sugestão, destaca erro
+                // Inputs
+                const valNcm = item.status === 'fixed' ? item.ncm : (item.suggestedNcm || item.ncm);
+                const valPis = item.status === 'fixed' ? item.cstPis : (item.suggestedCstPis || item.cstPis);
+                const valIcms = item.status === 'fixed' ? item.cstIcms : (item.suggestedCstIcms || item.cstIcms);
                 const ncmErrorClass = (valNcm === "00000000" || valNcm === "") ? "border-danger bg-danger/10" : "";
 
                 const row = document.createElement('tr');
-                row.className = "hover:bg-slate-800 border-b border-slate-700/50 transition";
+                row.className = "hover:bg-slate-800 border-b border-slate-700/50 transition " + (item.status==='fixed'?'bg-success/10':'');
                 row.innerHTML = `
+                    <td class="p-3 text-center align-middle"><input type="checkbox" class="row-check custom-checkbox" data-index="${originalIndex}" onchange="toggleRow(this, ${originalIndex})" ${item.selected?'checked':''}></td>
                     <td class="p-3 text-center align-top status-cell">${badge}</td>
                     <td class="p-3 align-top">
                         <div class="font-bold text-white text-xs truncate w-64" title="${item.xProd}">${item.xProd}</div>
                         <div class="text-[9px] text-slate-500 mt-1">R$ ${item.vProd.toFixed(2)}</div>
                     </td>
                     <td class="p-3 align-top">
-                        <input type="text" class="input-ncm edit-input ${ncmErrorClass}" value="${valNcm}" placeholder="NCM">
-                        <div class="text-[9px] text-slate-500 mt-1">Orig: ${item.ncm}</div>
+                        <input type="text" class="input-ncm ${inputClassNcm} ${ncmErrorClass}" value="${valNcm}" placeholder="00000000">
+                        <div class="text-[9px] text-slate-500 mt-1 text-center">Orig: ${item.ncm}</div>
                     </td>
                     <td class="p-3 align-top">
                         <input type="text" class="input-pis edit-input w-16" value="${valPis}">
@@ -504,21 +528,17 @@
                         ${diag}
                     </td>
                     <td class="p-3 text-center align-middle">
-                        <button onclick="confirmRow(this, ${index})" class="bg-primary hover:bg-orange-600 text-black px-3 py-1 rounded text-[10px] font-bold uppercase shadow transition" title="Confirmar Correção">
-                            <i class="fa-solid fa-check"></i> Salvar
-                        </button>
+                        ${item.status !== 'fixed' ? `<button onclick="confirmRow(this, ${originalIndex})" class="bg-primary hover:bg-orange-600 text-black px-3 py-1 rounded text-[10px] font-bold uppercase shadow transition"><i class="fa-solid fa-check"></i> Salvar</button>` : '<i class="fa-solid fa-check text-success text-lg"></i>'}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
         }
 
-        // --- NAVEGAÇÃO E MODAIS ---
         function switchTab(tabId) {
             ['dashboard', 'audit', 'pgdas', 'library'].forEach(id => document.getElementById('tab-' + id).classList.add('hidden-tab'));
             document.getElementById('tab-' + tabId).classList.remove('hidden-tab');
             const actions = document.getElementById('audit-actions');
-            
             if(tabId === 'audit') actions.classList.remove('hidden-tab'); 
             else actions.classList.add('hidden-tab');
         }
@@ -536,24 +556,16 @@
             const term = document.getElementById('lib-search').value.toLowerCase();
             const tbody = document.getElementById('lib-body');
             tbody.innerHTML = '';
-            
             let source = activeLibrary === 'federal' ? DB_FEDERAL : (activeLibrary === 'st' ? DB_ST : DB_BENEFITS);
             let filtered = source.filter(row => row.some(c => c && c.toLowerCase().includes(term)));
             if(term === '') filtered = filtered.slice(0, 100);
-
             filtered.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800 border-b border-slate-700/50 cursor-pointer transition";
                 tr.onclick = () => openLawModal(row);
-
-                if (activeLibrary === 'federal') {
-                    tr.innerHTML = `<td class="p-3 text-primary font-bold">${row[0]||''}</td><td class="p-3 font-mono text-white">${row[1]||''}</td><td class="p-3 text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase font-bold hover:text-white"><i class="fa-solid fa-book-open mr-1"></i> ${row[3]||''}</td>`;
-                } else if (activeLibrary === 'st') {
-                    // Ajuste de colunas para ST (que tem mais campos)
-                    tr.innerHTML = `<td class="p-3 font-bold text-slate-500">${row[0]||''}</td><td class="p-3 font-mono text-slate-400">${row[2]||''}</td><td class="p-3 font-mono text-white">${row[3]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[4]||''}</td><td class="p-3"><span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-bold border border-slate-600">${row[5]||'ST'}</span></td>`;
-                } else {
-                    tr.innerHTML = `<td class="p-3 font-bold text-success">${row[0]||''}</td><td class="p-3 text-white">${row[1]||''}</td><td class="p-3 font-mono text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[3]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase hover:text-white"><i class="fa-solid fa-file-contract mr-1"></i> ${row[4]||''}</td>`;
-                }
+                if (activeLibrary === 'federal') tr.innerHTML = `<td class="p-3 text-primary font-bold">${row[0]||''}</td><td class="p-3 font-mono text-white">${row[1]||''}</td><td class="p-3 text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase font-bold hover:text-white"><i class="fa-solid fa-book-open mr-1"></i> Ver Lei</td>`;
+                else if (activeLibrary === 'st') tr.innerHTML = `<td class="p-3 font-bold text-slate-500">${row[0]||''}</td><td class="p-3 font-mono text-slate-400">${row[2]||''}</td><td class="p-3 font-mono text-white">${row[3]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[4]||''}</td><td class="p-3"><span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-bold border border-slate-600">${row[5]||'ST'}</span></td>`;
+                else tr.innerHTML = `<td class="p-3 font-bold text-success">${row[0]||''}</td><td class="p-3 text-white">${row[1]||''}</td><td class="p-3 font-mono text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[3]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase hover:text-white"><i class="fa-solid fa-file-contract mr-1"></i> Ver Lei</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -562,26 +574,10 @@
             const modal = document.getElementById('lawModal');
             const body = document.getElementById('modalBody');
             modal.classList.remove('hidden-tab');
-            
             const ncm = activeLibrary === 'st' ? row[3] : row[1];
             const desc = activeLibrary === 'st' ? row[4] : row[2];
             const lei = row[row.length - 1]; 
-
-            body.innerHTML = `
-                <div class="mb-6 p-4 bg-black/40 rounded border border-slate-700">
-                    <h2 class="text-primary font-bold text-xl mb-2">${desc || 'Item sem descrição'}</h2>
-                    <div class="flex gap-4 text-xs">
-                        <span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm || '-'}</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <h4 class="text-white font-bold border-b border-slate-700 pb-2">Dispositivo Legal:</h4>
-                    <p class="text-justify text-slate-400">${lei || 'Detalhes indisponíveis'}</p>
-                    <p class="text-justify text-slate-500 text-xs italic mt-4">
-                        * Dados extraídos da base oficial Maradel.
-                    </p>
-                </div>
-            `;
+            body.innerHTML = `<div class="mb-6 p-4 bg-black/40 rounded border border-slate-700"><h2 class="text-primary font-bold text-xl mb-2">${desc || 'Item sem descrição'}</h2><div class="flex gap-4 text-xs"><span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm || '-'}</span></div></div><div class="space-y-4"><h4 class="text-white font-bold border-b border-slate-700 pb-2">Dispositivo Legal:</h4><p class="text-justify text-slate-400">${lei || 'Detalhes indisponíveis'}</p></div>`;
         }
         function closeModal() { document.getElementById('lawModal').classList.add('hidden-tab'); }
 
