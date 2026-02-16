@@ -13,10 +13,10 @@
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0f172a', /* Azul Profundo */
+                        dark: '#0f172a',
                         card: '#1e293b',
                         sidebar: '#020617',
-                        primary: '#f97316', /* Laranja Maradel */
+                        primary: '#f97316', 
                         accent: '#3b82f6',
                         success: '#10b981',
                         danger: '#ef4444',
@@ -34,12 +34,11 @@
         .glass-panel { background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(255,255,255,0.05); }
         .table-head { position: sticky; top: 0; z-index: 20; background: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         
-        /* Badges de Status */
         .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; display: inline-block; min-width: 90px; text-align: center; }
         .status-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
         .status-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
         .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .status-fixed { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid #3b82f6; } /* Azul para Corrigido */
+        .status-fixed { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid #3b82f6; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
@@ -48,7 +47,6 @@
         
         .hidden-tab { display: none !important; }
         
-        /* Modal de Lei - Z-Index Alto para garantir que apareça */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background: #1e293b; width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid #334155; padding: 0; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
     </style>
@@ -58,7 +56,7 @@
     <aside class="w-64 bg-sidebar border-r border-slate-800 flex flex-col z-30">
         <div class="px-6 py-8">
             <h1 class="text-xl font-black italic tracking-tighter text-white">AUDITOR<span class="text-primary">.AI</span></h1>
-            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Enterprise System</p>
+            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Connected System</p>
         </div>
 
         <nav class="space-y-1 flex-1 px-3">
@@ -201,26 +199,37 @@
 
     <script>
         // ==================================================================================
-        // CARREGAMENTO DINÂMICO
+        // 1. CONFIGURAÇÃO DOS ARQUIVOS (NOMES EXATOS QUE VOCÊ DEFINIU)
         // ==================================================================================
         let DB_FEDERAL = [], DB_ST = [], DB_BENEFITS = [];
+        
+        // ESTES SÃO OS NOMES CORRETOS COM BASE NO SEU PRINT
         const FILE_PIS = "lei_federal.html";
         const FILE_ST = "lei_estadual.html"; 
         const FILE_BENEFITS = "lei_beneficios.html";
 
         async function loadExternalData() {
             try {
-                const [r1, r2, r3] = await Promise.all([fetch(FILE_PIS), fetch(FILE_ST), fetch(FILE_BENEFITS)]);
+                const [r1, r2, r3] = await Promise.all([
+                    fetch(FILE_PIS), 
+                    fetch(FILE_ST), 
+                    fetch(FILE_BENEFITS)
+                ]);
+
                 if(r1.ok) DB_FEDERAL = parseTableData(await r1.text(), 'federal');
                 if(r2.ok) DB_ST = parseTableData(await r2.text(), 'st');
                 if(r3.ok) DB_BENEFITS = parseTableData(await r3.text(), 'benefits');
                 
                 const total = DB_FEDERAL.length + DB_ST.length + DB_BENEFITS.length;
-                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-check text-green-500"></i> ${total.toLocaleString()} regras carregadas.`;
-                document.getElementById('db-status').className = "text-[10px] text-green-500 font-bold";
+                if(total > 0) {
+                    document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-check text-green-500"></i> ${total.toLocaleString()} regras carregadas.`;
+                    document.getElementById('db-status').className = "text-[10px] text-green-500 font-bold";
+                } else {
+                    document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-warning"></i> Arquivos vazios?`;
+                }
             } catch (error) {
                 console.error("Erro:", error);
-                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Erro ao ler base de dados.`;
+                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 animate-pulse"></i> Erro: Arquivos não encontrados.`;
             }
         }
 
@@ -243,7 +252,7 @@
         window.addEventListener('load', loadExternalData);
 
         // ==================================================================================
-        // ENGINE DE AUDITORIA
+        // 2. LÓGICA DE AUDITORIA
         // ==================================================================================
         let xmlItems = [];
         let activeLibrary = 'federal';
@@ -252,7 +261,7 @@
             const files = event.target.files;
             if (!files.length) return;
             xmlItems = [];
-            document.getElementById('audit-body').innerHTML = `<tr><td colspan="5" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Processando inteligência fiscal...</p></td></tr>`;
+            document.getElementById('audit-body').innerHTML = `<tr><td colspan="5" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Analisando...</p></td></tr>`;
 
             setTimeout(() => {
                 let processed = 0;
@@ -322,31 +331,31 @@
             }
 
             // 2. AUDITORIA TRIBUTÁRIA
-            const fedMatch = DB_FEDERAL.find(row => ncmToAudit.startsWith(row[1].replace(/\./g,'')));
+            const fedMatch = DB_FEDERAL.find(row => ncmToAudit.startsWith(row[1]?.replace(/\./g,'')));
             if (fedMatch) {
                 const cstEsperado = fedMatch[0]; 
                 if (item.cst !== cstEsperado) {
                     if(!item.ncmError) { item.status = 'error'; item.tag = 'PIS/COFINS'; }
-                    item.analysis.push(`<span class="text-primary font-bold">Divergência PIS/COFINS:</span> Lei prevê CST ${cstEsperado}. Encontrado ${item.cst}.<br><span class="text-[10px] text-slate-500">${fedMatch[3]}</span>`);
+                    item.analysis.push(`<span class="text-primary font-bold">Divergência PIS/COFINS:</span> Lei prevê CST ${cstEsperado}. Encontrado ${item.cst}.<br><span class="text-[10px] text-slate-500">${fedMatch[3] || 'Lei Federal'}</span>`);
                     item.newCst = cstEsperado;
                     if(item.cst === '01' || item.cst === '49') item.potentialRecovery = item.vProd * 0.0365;
                 }
             }
 
-            const stMatch = DB_ST.find(row => ncmToAudit.startsWith(row[3].replace(/\./g,'')));
+            const stMatch = DB_ST.find(row => ncmToAudit.startsWith(row[3]?.replace(/\./g,'')));
             if (stMatch) {
                 const cstST = ['10', '30', '60', '70', '201', '202', '203', '500'];
                 if (!cstST.includes(item.cst)) {
                      if(item.status !== 'error') { item.status = 'warning'; item.tag = 'ICMS-ST'; }
-                     item.analysis.push(`<span class="text-accent font-bold">Alerta ST:</span> Produto ST (${stMatch[4]}). XML sem destaque.`);
+                     item.analysis.push(`<span class="text-accent font-bold">Alerta ST:</span> Produto ST (${stMatch[4] || 'Item ST'}). XML sem destaque.`);
                 }
             }
 
             if (!stMatch) {
-                const benMatch = DB_BENEFITS.find(row => ncmToAudit.startsWith(row[2].replace(/\./g,'')));
+                const benMatch = DB_BENEFITS.find(row => ncmToAudit.startsWith(row[2]?.replace(/\./g,'')));
                 if (benMatch && item.status === 'ok') {
                     item.status = 'success'; item.tag = 'BENEFÍCIO';
-                    item.analysis.push(`<span class="text-success font-bold">Oportunidade:</span> ${benMatch[0]} disponível (${benMatch[4]}).`);
+                    item.analysis.push(`<span class="text-success font-bold">Oportunidade:</span> ${benMatch[0]} disponível (${benMatch[4] || ''}).`);
                 }
             }
 
@@ -356,51 +365,44 @@
         function identifyProductByText(desc) {
             if (!desc) return null;
             const cleanDesc = desc.toUpperCase();
-            // Varre ST
+            // Varre ST (procura descrição na coluna 4 - Index 4 pois a leitura da tabela pode variar)
             for (let row of DB_ST) {
-                if (!row[4]) continue; 
-                const keywords = row[4].toUpperCase().split(' ').filter(w => w.length > 3 && !['PARA', 'QUALQUER'].includes(w));
-                if (keywords.some(k => cleanDesc.includes(k))) return { ncm: row[3], desc: row[4] };
-                if (cleanDesc.includes("PICOLE") && row[4].toUpperCase().includes("SORVETE")) return { ncm: "2105", desc: "Sorvetes e Picolés" };
+                // A coluna de descrição geralmente é a penúltima ou antepenúltima
+                // Vamos tentar achar a coluna de texto longo
+                const descCol = row[4]; 
+                if (!descCol || descCol.length < 3) continue; 
+                
+                const keywords = descCol.toUpperCase().split(' ').filter(w => w.length > 3 && !['PARA', 'QUALQUER'].includes(w));
+                if (keywords.some(k => cleanDesc.includes(k))) return { ncm: row[3], desc: descCol };
             }
             // Varre Federal
             for (let row of DB_FEDERAL) {
-                if (!row[2]) continue;
-                if(row[2].toUpperCase().includes("REFRIGERANTE") && cleanDesc.includes("REFRIGERANTE")) return { ncm: row[1], desc: row[2] };
+                const descCol = row[2];
+                if (!descCol) continue;
+                if(cleanDesc.includes("REFRIGERANTE") && descCol.toUpperCase().includes("REFRIGERANTE")) return { ncm: row[1], desc: descCol };
             }
             return null;
         }
 
-        // --- FUNÇÃO DE CORREÇÃO (BOTÃO) ---
         function applyFix(btn, index) {
             const item = xmlItems[index];
-            item.status = 'fixed'; // Novo status visual
-            
-            // Atualiza visualmente a linha
+            item.status = 'fixed';
             const row = btn.closest('tr');
             row.classList.remove('hover:bg-slate-800');
             row.classList.add('bg-success/10');
-            
-            // Atualiza Badge
             row.querySelectorAll('td')[0].innerHTML = '<span class="status-badge status-fixed">CORRIGIDO</span>';
-            
-            // Atualiza Botão
             const cellAction = row.querySelectorAll('td')[4];
             cellAction.innerHTML = `<span class="text-success text-xs font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-check-circle"></i> Feito</span>`;
-            
-            // Atualiza Dashboard Financeiro (Visual)
             const recEl = document.getElementById('dash-recovery');
             recEl.classList.add('text-white');
             setTimeout(() => recEl.classList.remove('text-white'), 300);
         }
 
-        // --- UI RENDER ---
         function updateDashboard() {
             document.getElementById('dash-xmls').innerText = "1"; 
             document.getElementById('dash-products').innerText = xmlItems.length.toLocaleString();
             document.getElementById('dash-ncm-errors').innerText = xmlItems.filter(i => i.ncmError).length;
             document.getElementById('dash-cst-errors').innerText = xmlItems.filter(i => i.status === 'error' && !i.ncmError).length;
-            
             const recovery = xmlItems.reduce((acc, i) => acc + i.potentialRecovery, 0);
             document.getElementById('dash-recovery').innerText = recovery.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
@@ -408,7 +410,6 @@
             tbody.innerHTML = '';
             
             xmlItems.slice(0, 200).forEach((item, index) => {
-                // STATUS E MENSAGENS EM VERDE SE OK
                 let badge = '<span class="status-badge bg-slate-700 text-slate-400">OK</span>';
                 let message = '<span class="text-success italic font-bold flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Conforme Lei</span>';
                 let actionBtn = '-';
@@ -458,7 +459,7 @@
             document.getElementById('pgdas-xml-val').dataset.val = total;
         }
 
-        // --- NAVEGAÇÃO ---
+        // --- NAVEGAÇÃO E MODAIS ---
         function switchTab(tabId) {
             ['dashboard', 'audit', 'pgdas', 'library'].forEach(id => document.getElementById('tab-' + id).classList.add('hidden-tab'));
             document.getElementById('tab-' + tabId).classList.remove('hidden-tab');
@@ -506,52 +507,46 @@
             filtered.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800 border-b border-slate-700/50 cursor-pointer transition";
-                
-                // Evento de clique para abrir modal
                 tr.onclick = () => openLawModal(row);
 
                 if (activeLibrary === 'federal') {
-                    tr.innerHTML = `<td class="p-3 text-primary font-bold">${row[0]}</td><td class="p-3 font-mono text-white">${row[1]}</td><td class="p-3 text-slate-300">${row[2]}</td><td class="p-3 text-slate-500 text-[10px] uppercase font-bold hover:text-white"><i class="fa-solid fa-book-open mr-1"></i> ${row[3]}</td>`;
+                    tr.innerHTML = `<td class="p-3 text-primary font-bold">${row[0]||''}</td><td class="p-3 font-mono text-white">${row[1]||''}</td><td class="p-3 text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase font-bold hover:text-white"><i class="fa-solid fa-book-open mr-1"></i> ${row[3]||''}</td>`;
                 } else if (activeLibrary === 'st') {
-                    tr.innerHTML = `<td class="p-3 font-bold text-slate-500">${row[0]}</td><td class="p-3 font-mono text-slate-400">${row[1]}</td><td class="p-3 font-mono text-white">${row[3]}</td><td class="p-3 text-slate-300 text-[11px]">${row[4]}</td><td class="p-3"><span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-bold border border-slate-600">${row[5]}</span></td>`;
+                    tr.innerHTML = `<td class="p-3 font-bold text-slate-500">${row[0]||''}</td><td class="p-3 font-mono text-slate-400">${row[2]||''}</td><td class="p-3 font-mono text-white">${row[3]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[4]||''}</td><td class="p-3"><span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-bold border border-slate-600">${row[5]||'ST'}</span></td>`;
                 } else {
-                    tr.innerHTML = `<td class="p-3 font-bold text-success">${row[0]}</td><td class="p-3 text-white">${row[1]}</td><td class="p-3 font-mono text-slate-300">${row[2]}</td><td class="p-3 text-slate-300 text-[11px]">${row[3]}</td><td class="p-3 text-slate-500 text-[10px] uppercase hover:text-white"><i class="fa-solid fa-file-contract mr-1"></i> ${row[4]}</td>`;
+                    tr.innerHTML = `<td class="p-3 font-bold text-success">${row[0]||''}</td><td class="p-3 text-white">${row[1]||''}</td><td class="p-3 font-mono text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[3]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase hover:text-white"><i class="fa-solid fa-file-contract mr-1"></i> ${row[4]||''}</td>`;
                 }
                 tbody.appendChild(tr);
             });
         }
 
-        // --- MODAL DE LEI ---
         function openLawModal(row) {
             const modal = document.getElementById('lawModal');
             const body = document.getElementById('modalBody');
             modal.classList.remove('hidden-tab');
             
-            // Pega o fundamento legal (última coluna geralmente)
-            const fundamento = row[row.length - 1];
-            const descricao = activeLibrary === 'st' ? row[4] : row[2];
             const ncm = activeLibrary === 'st' ? row[3] : row[1];
+            const desc = activeLibrary === 'st' ? row[4] : row[2];
+            const lei = row[row.length - 1]; 
 
             body.innerHTML = `
                 <div class="mb-6 p-4 bg-black/40 rounded border border-slate-700">
-                    <h2 class="text-primary font-bold text-xl mb-2">${descricao}</h2>
+                    <h2 class="text-primary font-bold text-xl mb-2">${desc || 'Item sem descrição'}</h2>
                     <div class="flex gap-4 text-xs">
-                        <span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm}</span>
-                        <span class="text-white bg-slate-700 px-2 py-1 rounded">CST Ref: ${row[0]}</span>
+                        <span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm || '-'}</span>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <h4 class="text-white font-bold border-b border-slate-700 pb-2">Dispositivo Legal:</h4>
-                    <p class="text-justify text-slate-400">${fundamento}</p>
+                    <p class="text-justify text-slate-400">${lei || 'Detalhes indisponíveis'}</p>
                     <p class="text-justify text-slate-500 text-xs italic mt-4">
-                        * Este produto consta na base de dados oficial carregada no sistema. A tributação deve seguir rigorosamente a classificação indicada para evitar autuações fiscais ou recolhimento indevido.
+                        * Dados extraídos da base oficial Maradel.
                     </p>
                 </div>
             `;
         }
         function closeModal() { document.getElementById('lawModal').classList.add('hidden-tab'); }
 
-        // --- PGDAS ---
         function checkPgdas() {
             const xml = parseFloat(document.getElementById('pgdas-xml-val').dataset.val || 0);
             const user = parseFloat(document.getElementById('pgdas-input').value || 0);
@@ -571,7 +566,6 @@
             XLSX.writeFile(wb, "Relatorio_Auditor.xlsx");
         }
 
-        // Init
         switchTab('dashboard');
     </script>
 </body>
