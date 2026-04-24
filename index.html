@@ -3,622 +3,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUDITOR FISCAL PRO | MARADEL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.css"></script>
+    <title>Sintegra Pro 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dark: '#0f172a',
-                        card: '#1e293b',
-                        sidebar: '#020617',
-                        primary: '#f97316', 
-                        accent: '#3b82f6',
-                        success: '#10b981',
-                        danger: '#ef4444',
-                        warning: '#f59e0b'
-                    },
-                    fontFamily: { mono: ['JetBrains Mono', 'monospace'] }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        .glass-panel { background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(255,255,255,0.05); }
-        .table-head { position: sticky; top: 0; z-index: 20; background: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
-        
-        /* Inputs Editáveis */
-        .edit-input { background: #020617; border: 1px solid #334155; color: white; padding: 6px; border-radius: 4px; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; transition: all 0.2s; text-align: center; }
-        .edit-input:focus { border-color: #f97316; outline: none; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
-        .edit-input.error { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-        .edit-input.suggested { border-color: #10b981; color: #10b981; font-weight: bold; }
+        :root {
+            --orange: #FF8C00;
+            --dark-bg: #000000;
+            --card-bg: #111111;
+            --gray-border: #333333;
+            --text-main: #ffffff;
+            --yes: #00FF00;
+            --no: #FF0000;
+            --blue: #00D1FF;
+            --gray-btn: #222222;
+        }
 
-        .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; display: inline-block; min-width: 80px; text-align: center; }
-        .status-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
-        .status-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
-        .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .status-fixed { background: #3b82f6; color: white; border: 1px solid #2563eb; }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #020617; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+        .container { max-width: 1000px; margin: auto; }
+
+        header {
+            border-bottom: 2px solid var(--orange);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upload-section {
+            background: #151515;
+            padding: 25px;
+            border: 2px dashed var(--orange);
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: var(--orange);
+            color: black;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            border: none;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .btn-secondary { background: #444; color: white; margin-left: 10px; }
+        .btn-history { background: transparent; color: var(--orange); border: 1px solid var(--orange); margin-top: 10px; }
+
+        #process-btn.active { background: var(--yes); color: black; }
+        #process-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        /* Estilos do Histórico */
+        .history-section {
+            background: #0a0a0a;
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #0f0f0f;
+        }
+
+        .history-table th {
+            text-align: left;
+            color: var(--orange);
+            border: 1px solid var(--gray-border);
+            padding: 12px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            background: #151515;
+        }
+
+        .history-table td {
+            padding: 12px;
+            border: 1px solid var(--gray-border);
+            font-size: 0.95em;
+            color: #ffffff; 
+        }
+
+        .history-table tr:hover { background: #1a1a1a; }
+
+        .action-btns { display: flex; gap: 12px; justify-content: center; }
+
+        .btn-circle {
+            padding: 0;
+            background: var(--blue);
+            color: #000;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        .btn-circle:hover { transform: scale(1.15); filter: brightness(1.2); }
+        .btn-pdf { background: #ffffff; }
+
+        .company-block {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-border);
+        }
+
+        .company-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 15px; }
+        .company-title { color: var(--orange); font-size: 1.3em; font-weight: bold; text-transform: uppercase; margin: 0; }
         
-        .hidden-tab { display: none !important; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: #1e293b; width: 900px; max-height: 85vh; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        
-        /* Checkbox Customizado */
-        .custom-checkbox { accent-color: #f97316; width: 16px; height: 16px; cursor: pointer; }
+        .badge { font-size: 0.7em; padding: 4px 8px; border-radius: 4px; margin-left: 5px; font-weight: bold; border: 1px solid #444; display: inline-block; }
+        .badge-regime { background: #1a1a1a; color: var(--blue); }
+        .badge-ref { background: #1a1a1a; color: #ffffff; } 
+
+        .uf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .uf-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+        .uf-sigla { background: var(--orange); color: black; font-weight: 900; padding: 2px 8px; border-radius: 4px; font-size: 1.1em; margin-bottom: 8px; display: inline-block; }
+        .status-val { font-weight: 900; font-size: 1.8em; display: block; }
+        .venc-val { font-size: 0.9em; color: var(--orange); font-weight: bold; margin-top: 5px; display: block; }
+        .reason-val { font-size: 0.8em; color: #ffffff; font-style: italic; font-weight: 500; } 
+
+        .toggle-group { display: flex; gap: 5px; margin-top: 10px; justify-content: center; }
+        .toggle-btn {
+            font-size: 0.65em;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 1px solid #444;
+            background: var(--gray-btn);
+            color: #ffffff; 
+            font-weight: bold;
+            flex: 1;
+            transition: all 0.2s;
+        }
+        .toggle-btn.on-gerado { background: #004400; color: #00FF00; border-color: #00FF00; }
+        .toggle-btn.on-enviado { background: #004488; color: #00D1FF; border-color: #00D1FF; }
+
+        .green { color: var(--yes); }
+        .red { color: var(--no); }
+
+        .hidden { display: none !important; }
+
+        @media print {
+            body { background-color: #ffffff; color: #000000; padding: 0; }
+            header { border-bottom: 2px solid #000; }
+            header h1 { color: #000 !important; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .print-company { margin-bottom: 20px; font-family: Arial, sans-serif; page-break-inside: avoid; border-bottom: 1px dashed #ccc; padding-bottom: 10px; }
+            .print-company h3 { font-size: 16px; margin: 0; text-transform: uppercase; }
+            .print-company p { font-size: 12px; margin: 3px 0; }
+            .print-status { font-weight: bold; font-size: 13px; color: #000; margin-top: 5px; }
+        }
+        .print-only { display: none; }
     </style>
 </head>
-<body class="flex h-screen w-full">
+<body>
 
-    <aside class="w-64 bg-sidebar border-r border-slate-800 flex flex-col z-30">
-        <div class="px-6 py-8">
-            <h1 class="text-xl font-black italic tracking-tighter text-white">AUDITOR<span class="text-primary">.MARADEL</span></h1>
-            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Inteligência Fiscal</p>
-        </div>
+<div class="container">
+    <header>
+        <h1 style="color: var(--orange); margin: 0; font-size: 1.5em;">MONITOR SINTEGRA 2026</h1>
+        <div id="clock" class="no-print" style="font-family: monospace; font-size: 0.9em; color: white;"></div>
+    </header>
 
-        <nav class="space-y-1 flex-1 px-3">
-            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-2">Gerencial</p>
-            <button onclick="switchTab('dashboard')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-bold text-white hover:bg-slate-800 transition border-l-2 border-primary bg-slate-900/50">
-                <i class="fa-solid fa-chart-line w-5 text-primary"></i> Dashboard
-            </button>
-
-            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-6">Operacional</p>
-            <button onclick="switchTab('audit')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition border-l-2 border-transparent">
-                <i class="fa-solid fa-file-invoice-dollar w-5"></i> Auditoria de XML
-            </button>
-            <button onclick="switchTab('pgdas')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition border-l-2 border-transparent">
-                <i class="fa-solid fa-scale-unbalanced w-5"></i> Conferência PGDAS
-            </button>
-
-            <p class="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2 mt-6">Consulta Base Legal</p>
-            <button onclick="switchLibrary('federal')" class="w-full flex items-center gap-3 px-4 py-2 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-800"><i class="fa-solid fa-book w-5"></i> Federal (PIS/COF)</button>
-            <button onclick="switchLibrary('st')" class="w-full flex items-center gap-3 px-4 py-2 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-800"><i class="fa-solid fa-industry w-5"></i> Estadual (ST)</button>
-            <button onclick="switchLibrary('benefits')" class="w-full flex items-center gap-3 px-4 py-2 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-800"><i class="fa-solid fa-hand-holding-dollar w-5"></i> Benefícios SP</button>
-        </nav>
-        
-        <div class="p-4 bg-slate-950 border-t border-slate-900 text-center">
-            <p class="text-[10px] text-slate-500" id="db-status"><i class="fa-solid fa-circle-notch fa-spin"></i> Conectando à base...</p>
-        </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col relative overflow-hidden bg-dark">
-        <header class="h-16 border-b border-slate-800 bg-card/80 backdrop-blur flex items-center justify-between px-8">
-            <div>
-                <h2 id="page-title" class="text-lg font-bold text-white">Dashboard</h2>
-                <p id="page-subtitle" class="text-[10px] text-slate-400 uppercase tracking-wide">Visão Geral</p>
-            </div>
-            <div id="audit-actions" class="hidden-tab flex gap-2">
-                <input type="file" id="xmlInput" multiple accept=".xml" class="hidden" onchange="handleXmlImport(event)">
-                <button onclick="document.getElementById('xmlInput').click()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-cloud-arrow-up"></i> IMPORTAR XMLs</button>
-                <button onclick="applyBatchCorrection()" id="btn-batch" class="bg-primary hover:bg-orange-600 text-black font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-orange-900/20 hidden-tab"><i class="fa-solid fa-check-double"></i> CORRIGIR EM LOTE</button>
-                <button onclick="exportReport()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-lg shadow-green-900/20"><i class="fa-solid fa-file-excel"></i> RELATÓRIO CORREÇÃO</button>
-            </div>
-        </header>
-
-        <div id="tab-dashboard" class="flex-1 p-8 overflow-auto">
-            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700 p-10 mb-8 relative overflow-hidden shadow-2xl group">
-                <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-primary/5 to-transparent pointer-events-none"></div>
-                <div class="relative z-10">
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"><i class="fa-solid fa-crown mr-1"></i> Inteligência Maradel</span>
-                    </div>
-                    
-                    <div id="hero-message">
-                        <h1 class="text-3xl font-black text-white mb-4 leading-tight">
-                            Descubra o <span class="text-primary">Dinheiro Oculto</span> nos seus cadastros.
-                        </h1>
-                        <p class="text-slate-400 text-sm max-w-2xl">
-                            Importe seus XMLs. Nossa IA cruza seus produtos com a Lei Federal e Estadual para identificar oportunidades de recuperação tributária imediata.
-                        </p>
-                    </div>
-
-                    <div id="hero-result" class="hidden-tab mt-6 pt-6 border-t border-slate-700/50">
-                        <h1 class="text-3xl font-light text-white mb-2 leading-tight">
-                            Com a <strong class="text-primary">Maradel</strong>, você tem <span class="text-success font-black text-4xl" id="display-recovery">R$ 0,00</span> a recuperar.
-                        </h1>
-                        <p class="text-slate-300 text-sm max-w-3xl mt-4 leading-relaxed">
-                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Identificamos <strong><span id="display-errors-count">0</span></strong> produtos com NCM/CST incorretos.<br>
-                            <i class="fa-solid fa-check-circle text-success mr-2"></i> Utilize a correção em lote para ajustar rapidamente.
-                        </p>
-                        <div class="mt-8">
-                            <button onclick="switchTab('audit')" class="bg-white hover:bg-slate-200 text-dark font-bold py-3 px-8 rounded shadow-xl transition flex items-center gap-3 text-sm uppercase tracking-wide">
-                                CORRIGIR AGORA <i class="fa-solid fa-arrow-right text-primary"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-4 gap-6">
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-slate-500"><p class="text-[10px] uppercase text-slate-400 font-bold">XMLs Processados</p><h3 class="text-3xl font-black text-white mt-1" id="dash-xmls">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-danger"><p class="text-[10px] uppercase text-slate-400 font-bold">NCM Incorreto</p><h3 class="text-3xl font-black text-danger mt-1" id="dash-ncm-errors">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-warning"><p class="text-[10px] uppercase text-slate-400 font-bold">Erro Tributário</p><h3 class="text-3xl font-black text-warning mt-1" id="dash-cst-errors">0</h3></div>
-                <div class="glass-panel p-5 rounded-xl border-l-4 border-success"><p class="text-[10px] uppercase text-slate-400 font-bold">Itens Auditados</p><h3 class="text-3xl font-black text-success mt-1" id="dash-products">0</h3></div>
-            </div>
-        </div>
-
-        <div id="tab-audit" class="flex-1 p-6 hidden-tab flex flex-col overflow-hidden">
-            <div class="flex-1 glass-panel rounded-xl border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
-                <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
-                    <div class="flex gap-4 items-center">
-                        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-primary"></i> Ajuste Fino</h3>
-                        <div class="flex gap-2">
-                            <button onclick="filterAudit('all')" class="text-[10px] px-2 py-1 bg-slate-700 rounded text-white border border-slate-600 hover:bg-slate-600">Todos</button>
-                            <button onclick="filterAudit('error')" class="text-[10px] px-2 py-1 bg-danger/20 rounded text-danger border border-danger hover:bg-danger/30">Erros</button>
-                            <button onclick="filterAudit('warning')" class="text-[10px] px-2 py-1 bg-warning/20 rounded text-warning border border-warning hover:bg-warning/30">Alertas</button>
-                        </div>
-                    </div>
-                    <div class="text-xs text-slate-400 italic">Selecione os itens para correção em lote.</div>
-                </div>
-                <div class="flex-1 overflow-auto bg-slate-900/50">
-                    <table class="w-full text-left text-xs">
-                        <thead class="table-head text-slate-300 uppercase font-bold text-[10px]">
-                            <tr>
-                                <th class="p-3 w-10 text-center"><input type="checkbox" id="check-all" onchange="toggleSelectAll(this)" class="custom-checkbox"></th>
-                                <th class="p-3 w-20 text-center">Status</th>
-                                <th class="p-3 w-1/4">Produto (XML)</th>
-                                <th class="p-3 w-32">NCM (8 Dígitos)</th>
-                                <th class="p-3 w-24">CST PIS</th>
-                                <th class="p-3 w-24">CSOSN ICMS</th>
-                                <th class="p-3 text-slate-400 w-1/4">Diagnóstico</th>
-                                <th class="p-3 w-24 text-center">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="audit-body" class="divide-y divide-slate-800 text-slate-300">
-                            <tr><td colspan="8" class="p-20 text-center text-slate-500">Aguardando importação de XML...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-pgdas" class="flex-1 p-8 hidden-tab overflow-auto">
-            <div class="max-w-4xl mx-auto glass-panel p-8 rounded-xl border border-slate-700">
-                <h2 class="text-xl font-bold text-white mb-6">Conferência PGDAS</h2>
-                <div class="grid grid-cols-2 gap-8 mb-8">
-                    <div><label class="block text-xs font-bold text-primary mb-2">TOTAL XML</label><div class="text-4xl font-mono font-bold text-white" id="pgdas-xml-val">R$ 0,00</div></div>
-                    <div><label class="block text-xs font-bold text-slate-400 mb-2">DECLARADO</label><input type="number" id="pgdas-input" class="w-full bg-slate-900 border border-slate-700 text-white text-2xl p-3 rounded focus:border-primary outline-none" placeholder="0.00"></div>
-                </div>
-                <button onclick="checkPgdas()" class="w-full bg-primary hover:bg-orange-600 text-black font-bold py-3 rounded">AUDITAR DIVERGÊNCIA</button>
-                <div id="pgdas-result" class="mt-6 hidden-tab"></div>
-            </div>
-        </div>
-
-        <div id="tab-library" class="flex-1 p-6 hidden-tab flex flex-col overflow-hidden">
-            <div class="flex gap-4 mb-4 shrink-0 bg-card p-4 rounded-lg border border-slate-700">
-                <div class="px-4 py-2 bg-slate-800 rounded text-xs font-bold text-white border border-slate-600" id="lib-badge">BASE</div>
-                <input type="text" id="lib-search" onkeyup="filterLibrary()" class="w-full bg-transparent border-none text-white p-2 outline-none" placeholder="Pesquisar lei...">
-            </div>
-            <div class="flex-1 glass-panel rounded-lg flex flex-col overflow-hidden">
-                <div class="flex-1 overflow-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="table-head text-slate-400 uppercase font-bold text-[10px] bg-slate-800" id="lib-thead"></thead>
-                        <tbody id="lib-body" class="divide-y divide-slate-700 text-slate-300 font-mono"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="lawModal" class="hidden-tab modal-overlay" onclick="if(event.target === this) closeModal()">
-        <div class="modal-content">
-            <div class="flex justify-between items-center p-4 border-b border-slate-700 bg-slate-800 rounded-t-lg">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-book-open text-primary"></i> Detalhe da Legislação</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div id="modalBody" class="p-6 overflow-y-auto text-slate-300 text-sm font-mono whitespace-pre-wrap leading-relaxed flex-1"></div>
-            <div class="p-4 border-t border-slate-700 bg-slate-800/50 rounded-b-lg text-right">
-                <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded">FECHAR</button>
-            </div>
-        </div>
+    <div class="upload-section no-print">
+        <input type="file" id="pdf-input" accept=".pdf" multiple hidden>
+        <label for="pdf-input" class="btn">Selecionar PDFs</label>
+        <button id="process-btn" class="btn btn-secondary" disabled>Processar</button>
+        <button id="print-btn" class="btn hidden" style="background: #ffffff; color: black; margin-left: 10px;">🖨️ Imprimir e Salvar</button>
+        <button id="toggle-history" class="btn btn-history">📜 Relatórios Salvos</button>
+        <p id="status-msg" style="margin-top: 10px; color: #ffffff; min-height: 1em; font-weight: bold;"></p>
     </div>
 
-    <script>
-        // ==================================================================================
-        // 1. CARREGAMENTO DOS ARQUIVOS EXTERNOS (NOMES EXATOS DO REPOSITÓRIO)
-        // ==================================================================================
-        let DB_FEDERAL = [], DB_ST = [], DB_BENEFITS = [];
-        
-        // --- ATENÇÃO: NOMES CORRIGIDOS CONFORME SEU PRINT ---
-        const FILE_PIS = "PIS COFINS.HTML";
-        // Atenção aos acentos, espaços e .html minúsculo aqui
-        const FILE_ST = "CONVÊNIO ICMS N° 142, DE 14 DE DEZEMBRO DE 2018.html"; 
-        const FILE_BENEFITS = "BENEFICIOS ISENCOES E REDUCAO.HTML";
+    <!-- Seção de Histórico -->
+    <div id="history-container" class="history-section no-print hidden">
+        <h2 style="font-size: 1.1em; color: var(--orange); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px;">Relatórios Arquivados</h2>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th style="width: 45%;">Sintegra Enviados</th>
+                    <th style="width: 35%;">Referente ao mês</th>
+                    <th style="width: 20%; text-align: center;">Ação</th>
+                </tr>
+            </thead>
+            <tbody id="history-list">
+                <tr><td colspan="3" style="text-align:center; padding:20px; color:#ffffff;">Nenhum histórico na sessão atual.</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-        async function loadExternalData() {
+    <div id="results" class="no-print"></div>
+
+    <div id="print-area" class="print-only"></div>
+</div>
+
+<script>
+    // --- Lógica de Variáveis Globais ---
+    const OBRIGATORIOS = ["AC", "AM", "AP", "DF", "ES", "GO", "MA", "MG", "PA", "PI", "PR", "SC"];
+    let consolidado = {};
+    let arquivos = [];
+    let localHistory = []; // Armazena relatórios na sessão para uso fora do Canvas
+    let isCloudActive = false;
+
+    // --- Elementos do DOM ---
+    const input = document.getElementById('pdf-input');
+    const procBtn = document.getElementById('process-btn');
+    const printBtn = document.getElementById('print-btn');
+    const historyBtn = document.getElementById('toggle-history');
+    const historyContainer = document.getElementById('history-container');
+    const historyList = document.getElementById('history-list');
+    const status = document.getElementById('status-msg');
+    const resultsArea = document.getElementById('results');
+    const printArea = document.getElementById('print-area');
+
+    // --- PDF.js Setup ---
+    const pdfjs = window['pdfjs-dist/build/pdf'];
+    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+    // --- Lógica do Firebase (Configurada para não travar o código principal) ---
+    let db = null;
+    let auth = null;
+    let appId = 'sintegra-monitor-default';
+
+    async function initCloud() {
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                auth = firebase.auth();
+                if (typeof __app_id !== 'undefined') appId = __app_id;
+                
+                auth.onAuthStateChanged((user) => { if (user) loadHistory(); });
+                
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await auth.signInWithCustomToken(__initial_auth_token);
+                } else {
+                    await auth.signInAnonymously();
+                }
+                isCloudActive = true;
+            }
+        } catch (e) { console.warn("Modo local ativo."); }
+    }
+
+    // --- Funções de Interface do Histórico ---
+    function renderHistoryTable(docs) {
+        historyList.innerHTML = "";
+        if (docs.length === 0) {
+            historyList.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px; color:white;'>Nenhum histórico encontrado.</td></tr>";
+            return;
+        }
+
+        docs.forEach(data => {
+            const tr = document.createElement('tr');
+            const dataEnvio = new Date(data.timestamp).toLocaleDateString('pt-BR');
+            tr.innerHTML = `
+                <td style="font-weight: bold; color: #ffffff;">Sintegra Enviados - ${dataEnvio}</td>
+                <td style="color: #ffffff;">${data.globalPeriodo || "N/A"}</td>
+                <td style="text-align: center;">
+                    <div class="action-btns">
+                        <button class="btn-circle" onclick="visualizarRelatorio('${data.id}')" title="Visualizar Detalhes">👁️</button>
+                        <button class="btn-circle btn-pdf" onclick="imprimirSalvo('${data.id}')" title="Gerar PDF">📄</button>
+                    </div>
+                </td>
+            `;
+            historyList.appendChild(tr);
+        });
+        window._historyCache = docs;
+    }
+
+    async function loadHistory() {
+        if (isCloudActive && db) {
             try {
-                // EncodeURI ajuda a tratar espaços e caracteres especiais na URL
-                const [r1, r2, r3] = await Promise.all([
-                    fetch(encodeURI(FILE_PIS)), 
-                    fetch(encodeURI(FILE_ST)), 
-                    fetch(encodeURI(FILE_BENEFITS))
-                ]);
-
-                if(r1.ok) DB_FEDERAL = parseTableData(await r1.text(), 'federal');
-                if(r2.ok) DB_ST = parseTableData(await r2.text(), 'st');
-                if(r3.ok) DB_BENEFITS = parseTableData(await r3.text(), 'benefits');
-                
-                const total = DB_FEDERAL.length + DB_ST.length + DB_BENEFITS.length;
-                if(total > 0) {
-                    document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-check text-green-500"></i> ${total.toLocaleString()} regras carregadas.`;
-                    document.getElementById('db-status').className = "text-[10px] text-green-500 font-bold";
-                }
-            } catch (error) {
-                console.error("Erro:", error);
-                document.getElementById('db-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Erro leitura.`;
-            }
+                const col = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('history');
+                const snapshot = await col.get();
+                const docs = [];
+                snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+                docs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                renderHistoryTable(docs);
+            } catch (e) { console.error(e); }
+        } else {
+            renderHistoryTable(localHistory);
         }
+    }
 
-        function parseTableData(htmlText, type) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            const rows = doc.querySelectorAll('tbody tr');
-            const data = [];
-            rows.forEach(row => {
-                const cols = row.querySelectorAll('td');
-                if (cols.length > 0) {
-                    const rowData = [];
-                    cols.forEach(col => rowData.push(col.textContent.trim()));
-                    if(type === 'federal' && rowData.length >= 4) data.push(rowData);
-                    else if(rowData.length >= 6) data.push(rowData);
-                }
-            });
-            return data;
+    globalThis.visualizarRelatorio = function(docId) {
+        const data = window._historyCache.find(d => d.id === docId);
+        if (data) {
+            consolidado = data.consolidado;
+            historyContainer.classList.add('hidden');
+            resultsArea.classList.remove('hidden');
+            renderResults();
+            status.innerText = "Relatório carregado com sucesso.";
+            resultsArea.scrollIntoView({ behavior: 'smooth' });
         }
-        window.addEventListener('load', loadExternalData);
+    }
 
-        // ==================================================================================
-        // 2. ENGINE DE AUDITORIA
-        // ==================================================================================
-        let xmlItems = [];
-        let activeLibrary = 'federal';
-        let currentFilter = 'all';
-
-        function handleXmlImport(event) {
-            const files = event.target.files;
-            if (!files.length) return;
-            xmlItems = [];
-            document.getElementById('audit-body').innerHTML = `<tr><td colspan="8" class="p-12 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-primary"></i><p>Analisando...</p></td></tr>`;
-
-            setTimeout(() => {
-                let processed = 0;
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const parser = new DOMParser();
-                        const xml = parser.parseFromString(e.target.result, "text/xml");
-                        const dets = xml.getElementsByTagName("det");
-                        for (let det of dets) {
-                            const prod = det.getElementsByTagName("prod")[0];
-                            const imposto = det.getElementsByTagName("imposto")[0];
-                            const cstPis = getTagValue(imposto, ["PIS", "CST"]) || "01";
-                            const cstIcms = getTagValue(imposto, ["ICMS", "CSOSN", "CST"]) || "102";
-                            const item = {
-                                xProd: prod.getElementsByTagName("xProd")[0]?.textContent || "SEM NOME",
-                                ncm: prod.getElementsByTagName("NCM")[0]?.textContent || "00000000",
-                                vProd: parseFloat(prod.getElementsByTagName("vProd")[0]?.textContent || 0),
-                                cstPis: cstPis,
-                                cstIcms: cstIcms,
-                                suggestedNcm: "", 
-                                suggestedCstPis: "",
-                                suggestedCstIcms: "",
-                                selected: false // Checkbox
-                            };
-                            auditItem(item);
-                        }
-                        processed++;
-                        if(processed === files.length) { updateDashboard(); switchTab('dashboard'); }
-                    };
-                    reader.readAsText(file);
-                });
-            }, 800);
+    globalThis.imprimirSalvo = function(docId) {
+        const data = window._historyCache.find(d => d.id === docId);
+        if (data) {
+            consolidado = data.consolidado;
+            renderPrintArea();
+            window.print();
         }
+    }
 
-        function getTagValue(parent, path) {
-            if (!parent) return null;
-            const tags = parent.getElementsByTagName("*");
-            for (let i = 0; i < tags.length; i++) {
-                if (path.includes(tags[i].tagName)) return tags[i].textContent;
-            }
-            return null;
+    async function autoSaveReport() {
+        const first = Object.values(consolidado)[0];
+        const ref = first ? first.periodo : "N/A";
+        const newDoc = {
+            id: 'id_' + Date.now(),
+            timestamp: Date.now(),
+            globalPeriodo: ref,
+            consolidado: JSON.parse(JSON.stringify(consolidado))
+        };
+
+        localHistory.unshift(newDoc);
+        if (isCloudActive && db) {
+            try {
+                const col = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('history');
+                await col.add(newDoc);
+                loadHistory();
+            } catch (e) { console.warn("Erro ao salvar nuvem."); }
+        } else {
+            renderHistoryTable(localHistory);
         }
+    }
 
-        function auditItem(item) {
-            item.status = 'ok';
-            item.analysis = [];
-            item.ncmError = false;
-            item.potentialRecovery = 0;
-            
-            let ncmClean = item.ncm.replace(/\./g, '').trim(); 
-            const descClean = item.xProd.toUpperCase();
+    // --- Core: Processamento de PDFs ---
+    input.addEventListener('change', (e) => {
+        arquivos = Array.from(e.target.files);
+        if (arquivos.length > 0) {
+            status.innerText = arquivos.length + " arquivos selecionados.";
+            procBtn.disabled = false;
+            procBtn.classList.add('active');
+        }
+    });
 
-            // 1. INTELIGÊNCIA DE NCM
-            let identifiedProduct = identifyProductByText(descClean);
-            
-            if (ncmClean === "00000000" || ncmClean.length < 4 || (identifiedProduct && !ncmClean.startsWith(identifiedProduct.ncm.replace(/\./g,'')))) {
-                if (identifiedProduct) {
-                    item.status = 'error'; 
-                    item.ncmError = true;
-                    item.suggestedNcm = identifiedProduct.ncm.replace(/\./g, '');
-                    ncmClean = item.suggestedNcm;
-                    item.analysis.push(`<span class="text-warning font-bold">NCM Incorreto:</span> Identificado como "${identifiedProduct.desc}" (NCM ${identifiedProduct.ncm}).`);
-                } else if (ncmClean === "00000000") {
-                    item.status = 'error'; 
-                    item.ncmError = true;
-                    item.suggestedNcm = ""; // Vazio para obrigar edição
-                    item.analysis.push(`<span class="text-danger font-bold">NCM INVÁLIDO:</span> Produto não identificado. Preencha manualmente.`);
-                    xmlItems.push(item);
-                    return; 
-                }
-            } else {
-                item.suggestedNcm = item.ncm;
+    procBtn.onclick = async () => {
+        procBtn.disabled = true;
+        procBtn.classList.remove('active');
+        consolidado = {};
+        resultsArea.innerHTML = "";
+        printArea.innerHTML = "";
+        resultsArea.classList.remove('hidden');
+        historyContainer.classList.add('hidden'); 
+        
+        try {
+            for (let i = 0; i < arquivos.length; i++) {
+                status.innerText = `Lendo arquivo ${i + 1} de ${arquivos.length}...`;
+                const text = await extractText(arquivos[i]);
+                if (text) parseData(text);
             }
 
-            // 2. AUDITORIA TRIBUTÁRIA
-            const fedMatch = DB_FEDERAL.find(row => ncmClean.startsWith(row[1]?.replace(/\./g,'')));
-            if (fedMatch) {
-                const cstEsperado = fedMatch[0]; 
-                item.suggestedCstPis = cstEsperado;
-                if (item.cstPis !== cstEsperado) {
-                    if(!item.ncmError) item.status = 'error';
-                    item.analysis.push(`<span class="text-primary font-bold">PIS/COF:</span> Lei prevê ${cstEsperado}.`);
-                    if(['01','02','03'].includes(item.cstPis)) item.potentialRecovery += item.vProd * 0.0365;
-                }
-            } else {
-                item.suggestedCstPis = "01";
+            const cnpjs = Object.keys(consolidado);
+            if (cnpjs.length === 0) {
+                status.innerText = "Nenhum CNPJ encontrado.";
+                procBtn.disabled = false;
+                return;
             }
 
-            const stMatch = DB_ST.find(row => ncmClean.startsWith(row[3]?.replace(/\./g,'')));
-            if (stMatch) {
-                const cstST = ['10', '30', '60', '70', '201', '202', '203', '500'];
-                item.suggestedCstIcms = "500";
-                if (!cstST.includes(item.cstIcms)) {
-                     if(item.status !== 'error') item.status = 'warning';
-                     item.analysis.push(`<span class="text-accent font-bold">ICMS ST:</span> Produto ST (${stMatch[4]}).`);
-                }
-            } else {
-                item.suggestedCstIcms = "102";
+            const batchSize = 5;
+            for (let i = 0; i < cnpjs.length; i += batchSize) {
+                const batch = cnpjs.slice(i, i + batchSize);
+                status.innerText = `Consultando empresas... (${Math.min(i + batchSize, cnpjs.length)}/${cnpjs.length})`;
+                await Promise.all(batch.map(async (cnpj) => {
+                    const dados = await consultarDadosEmpresa(cnpj);
+                    if (dados) {
+                        consolidado[cnpj].nome = dados.nome;
+                        consolidado[cnpj].isSimples = dados.isSimples;
+                        consolidado[cnpj].regime = dados.isSimples ? "Simples Nacional" : "Lucro Presumido/Real";
+                    }
+                }));
+                if (i + batchSize < cnpjs.length) await new Promise(r => setTimeout(r, 800));
             }
 
-            xmlItems.push(item);
+            renderResults();
+            status.innerText = "Processamento finalizado!";
+        } catch (error) { 
+            console.error(error);
+            status.innerText = "Ocorreu um erro no processamento.";
         }
+        procBtn.disabled = false;
+    };
 
-        function identifyProductByText(desc) {
-            if (!desc) return null;
-            const cleanDesc = desc.toUpperCase();
-            for (let row of DB_ST) {
-                if (!row[4]) continue; 
-                const keywords = row[4].toUpperCase().split(' ').filter(w => w.length > 3 && !['PARA', 'QUALQUER', 'OUTROS'].includes(w));
-                if (keywords.some(k => cleanDesc.includes(k))) return { ncm: row[3], desc: row[4] };
-                if (cleanDesc.includes("PICOLE") && row[4].toUpperCase().includes("SORVETE")) return { ncm: "2105.00", desc: "Sorvetes e Picolés" };
+    async function extractText(file) {
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjs.getDocument(arrayBuffer).promise;
+            let fullText = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                fullText += content.items.map(s => s.str).join("   ") + "   \n   ";
             }
-            for (let row of DB_FEDERAL) {
-                if (!row[2]) continue;
-                if(cleanDesc.includes("REFRIGERANTE") && row[2].toUpperCase().includes("REFRIGERANTE")) return { ncm: row[1], desc: row[2] };
+            return fullText;
+        } catch (e) { return ""; }
+    }
+
+    function parseData(text) {
+        const cnpjs = text.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/g) || text.match(/\d{14}/g);
+        if (!cnpjs) return;
+        const partes = text.split(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/);
+
+        for (let i = 0; i < cnpjs.length; i++) {
+            const cnpj = cnpjs[i];
+            const textoDepois = partes[i + 1] || "";
+            const textoAntes = partes[i] || "";
+
+            let periodo = "N/A";
+            const pMatch = text.match(/\b(\d{2}\/\d{2}\/\d{4}\s*(?:a|-)\s*\d{2}\/\d{2}\/\d{4})\b/i) || text.match(/\b(0[1-9]|1[0-2])\/\d{4}\b/);
+            if (pMatch) periodo = pMatch[0];
+
+            const regexIE = /(?:IE\s*[:\-]?|Inscri[çc][ãa]o\s*(?:Estadual)?\s*[:\-]?|Insc\s*Est\.?\s*[:\-]?)\s*([0-9][\d\.\-\s]{5,20})/i;
+            const searchBlock = textoAntes.slice(-150) + " " + textoDepois.slice(0, 200);
+            const matchIE = regexIE.exec(searchBlock);
+            let ieFound = "";
+            if (matchIE) {
+                let val = matchIE[1].trim().split(/\s{2,}/)[0];
+                ieFound = val.replace(/\D/g, '');
+                if (ieFound.startsWith('01') && ieFound.length > 12) ieFound = ieFound.substring(2);
             }
-            return null;
-        }
 
-        // --- FUNÇÕES DE LOTE E UI ---
-        function toggleSelectAll(source) {
-            const checkboxes = document.getElementsByClassName('row-check');
-            for(let i=0; i<checkboxes.length; i++) {
-                checkboxes[i].checked = source.checked;
-                xmlItems[checkboxes[i].dataset.index].selected = source.checked;
+            if (!consolidado[cnpj]) {
+                consolidado[cnpj] = { nome: "Identificando...", cnpj, ufs: {}, periodo, isSimples: true, inscricaoEstadual: ieFound };
+            } else if (ieFound && !consolidado[cnpj].inscricaoEstadual) {
+                consolidado[cnpj].inscricaoEstadual = ieFound;
             }
-            toggleBatchBtn();
-        }
 
-        function toggleRow(checkbox, index) {
-            xmlItems[index].selected = checkbox.checked;
-            toggleBatchBtn();
-        }
-
-        function toggleBatchBtn() {
-            const anyChecked = xmlItems.some(i => i.selected);
-            const btn = document.getElementById('btn-batch');
-            anyChecked ? btn.classList.remove('hidden-tab') : btn.classList.add('hidden-tab');
-        }
-
-        function applyBatchCorrection() {
-            let count = 0;
-            xmlItems.forEach((item, index) => {
-                if(item.selected && (item.suggestedNcm || item.suggestedCstPis || item.suggestedCstIcms)) {
-                    if(item.suggestedNcm && item.suggestedNcm !== "") item.ncm = item.suggestedNcm;
-                    if(item.suggestedCstPis) item.cstPis = item.suggestedCstPis;
-                    if(item.suggestedCstIcms) item.cstIcms = item.suggestedCstIcms;
-                    item.status = 'fixed';
-                    item.selected = false;
-                    count++;
+            const ufRegex = /Estado:\s*([A-Z]{2})/g;
+            let m;
+            while ((m = ufRegex.exec(textoDepois)) !== null) {
+                const uf = m[1].toUpperCase();
+                let temIE = !!consolidado[cnpj].inscricaoEstadual;
+                if (!temIE) {
+                    const trechoUf = textoDepois.slice(m.index, m.index + 200);
+                    temIE = regexIE.test(trechoUf);
                 }
-            });
-            document.getElementById('check-all').checked = false;
-            toggleBatchBtn();
-            updateDashboard();
-            alert(`${count} itens corrigidos com sucesso!`);
-        }
-
-        function confirmRow(btn, index) {
-            const row = btn.closest('tr');
-            xmlItems[index].ncm = row.querySelector('.input-ncm').value;
-            xmlItems[index].cstPis = row.querySelector('.input-pis').value;
-            xmlItems[index].cstIcms = row.querySelector('.input-icms').value;
-            xmlItems[index].status = 'fixed';
-            updateDashboard(false);
-            
-            // Visual feedback
-            row.classList.add('bg-success/10');
-            row.querySelector('.status-cell').innerHTML = '<span class="status-badge status-fixed"><i class="fa-solid fa-check"></i> FEITO</span>';
-            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-            btn.className = "text-success font-bold text-lg";
-        }
-
-        function filterAudit(filterType) {
-            currentFilter = filterType;
-            updateDashboard(true);
-        }
-
-        function updateDashboard(redrawTable = true) {
-            document.getElementById('dash-xmls').innerText = "1"; 
-            document.getElementById('dash-products').innerText = xmlItems.length.toLocaleString();
-            document.getElementById('dash-ncm-errors').innerText = xmlItems.filter(i => i.ncmError).length;
-            document.getElementById('display-errors-count').innerText = xmlItems.filter(i => i.status !== 'ok').length;
-            
-            const recovery = xmlItems.reduce((acc, i) => acc + i.potentialRecovery, 0);
-            const recFmt = recovery.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            document.getElementById('dash-recovery').innerText = recFmt;
-            document.getElementById('display-recovery').innerText = recFmt;
-            document.getElementById('hero-message').classList.add('hidden-tab');
-            document.getElementById('hero-result').classList.remove('hidden-tab');
-
-            if (!redrawTable) return;
-
-            const tbody = document.getElementById('audit-body');
-            tbody.innerHTML = '';
-            
-            // Filtro de Visualização
-            let visibleItems = xmlItems;
-            if(currentFilter === 'error') visibleItems = xmlItems.filter(i => i.status === 'error' || i.ncmError);
-            if(currentFilter === 'warning') visibleItems = xmlItems.filter(i => i.status === 'warning');
-
-            visibleItems.slice(0, 200).forEach((item, index) => {
-                const originalIndex = xmlItems.indexOf(item);
-
-                let badge = '<span class="status-badge bg-slate-700 text-slate-400">OK</span>';
-                let diag = '<span class="text-success italic font-bold flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Conforme Lei</span>';
-                let inputClassNcm = "edit-input";
-                
-                if (item.status === 'fixed') {
-                    badge = '<span class="status-badge status-fixed">FEITO</span>';
-                    diag = '<span class="text-success">Item corrigido manualmente.</span>';
+                if (!consolidado[cnpj].ufs[uf]) {
+                    consolidado[cnpj].ufs[uf] = { temIE, gerado: false, enviado: false };
                 }
-                else if (item.status === 'error' || item.ncmError) {
-                    badge = '<span class="status-badge status-danger">ERRO</span>';
-                    diag = item.analysis.join('<br>');
-                    if(item.suggestedNcm) inputClassNcm += " suggested";
-                } else if (item.status === 'warning') {
-                    badge = '<span class="status-badge status-warning">ALERTA</span>';
-                    diag = item.analysis.join('<br>');
-                }
+            }
+        }
+    }
 
-                // Inputs
-                const valNcm = item.status === 'fixed' ? item.ncm : (item.suggestedNcm || item.ncm);
-                const valPis = item.status === 'fixed' ? item.cstPis : (item.suggestedCstPis || item.cstPis);
-                const valIcms = item.status === 'fixed' ? item.cstIcms : (item.suggestedCstIcms || item.cstIcms);
-                const ncmErrorClass = (valNcm === "00000000" || valNcm === "") ? "border-danger bg-danger/10" : "";
+    async function consultarDadosEmpresa(cnpj) {
+        const cleanCnpj = cnpj.replace(/\D/g, '');
+        const url = `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`;
+        for (let t = 1; t <= 3; t++) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    return { nome: data.razao_social || data.nome, isSimples: !!data.opcao_pelo_simples };
+                } else if (response.status === 429) await new Promise(r => setTimeout(r, 1500 * t));
+                else break;
+            } catch (e) { await new Promise(r => setTimeout(r, 1000)); }
+        }
+        return null;
+    }
 
-                const row = document.createElement('tr');
-                row.className = "hover:bg-slate-800 border-b border-slate-700/50 transition " + (item.status==='fixed'?'bg-success/10':'');
-                row.innerHTML = `
-                    <td class="p-3 text-center align-middle"><input type="checkbox" class="row-check custom-checkbox" data-index="${originalIndex}" onchange="toggleRow(this, ${originalIndex})" ${item.selected?'checked':''}></td>
-                    <td class="p-3 text-center align-top status-cell">${badge}</td>
-                    <td class="p-3 align-top">
-                        <div class="font-bold text-white text-xs truncate w-64" title="${item.xProd}">${item.xProd}</div>
-                        <div class="text-[9px] text-slate-500 mt-1">R$ ${item.vProd.toFixed(2)}</div>
-                    </td>
-                    <td class="p-3 align-top">
-                        <input type="text" class="input-ncm ${inputClassNcm} ${ncmErrorClass}" value="${valNcm}" placeholder="00000000">
-                        <div class="text-[9px] text-slate-500 mt-1 text-center">Orig: ${item.ncm}</div>
-                    </td>
-                    <td class="p-3 align-top">
-                        <input type="text" class="input-pis edit-input w-16" value="${valPis}">
-                    </td>
-                    <td class="p-3 align-top">
-                        <input type="text" class="input-icms edit-input w-16" value="${valIcms}">
-                    </td>
-                    <td class="p-3 text-xs leading-relaxed align-top text-slate-300">
-                        ${diag}
-                    </td>
-                    <td class="p-3 text-center align-middle">
-                        ${item.status !== 'fixed' ? `<button onclick="confirmRow(this, ${originalIndex})" class="bg-primary hover:bg-orange-600 text-black px-3 py-1 rounded text-[10px] font-bold uppercase shadow transition"><i class="fa-solid fa-check"></i> Salvar</button>` : '<i class="fa-solid fa-check text-success text-lg"></i>'}
-                    </td>
+    globalThis.toggleFlag = function(cnpj, uf, flag) {
+        if (consolidado[cnpj] && consolidado[cnpj].ufs[uf]) {
+            consolidado[cnpj].ufs[uf][flag] = !consolidado[cnpj].ufs[uf][flag];
+            renderResults(); 
+        }
+    };
+
+    function renderResults() {
+        resultsArea.innerHTML = "";
+        const empresas = Object.values(consolidado).sort((a, b) => {
+            const aT = Object.entries(a.ufs).some(([u, i]) => OBRIGATORIOS.includes(u) && a.isSimples && i.temIE);
+            const bT = Object.entries(b.ufs).some(([u, i]) => OBRIGATORIOS.includes(u) && b.isSimples && i.temIE);
+            return (bT ? 1 : 0) - (aT ? 1 : 0);
+        });
+
+        empresas.forEach(emp => {
+            const block = document.createElement('div');
+            block.className = 'company-block';
+            let ufsHtml = "";
+            Object.entries(emp.ufs).sort().forEach(([uf, info]) => {
+                const obr = OBRIGATORIOS.includes(uf);
+                const isSim = obr && emp.isSimples && info.temIE;
+                let razao = !obr ? "UF Dispensada" : (!emp.isSimples ? "Lucro Presumido" : (!info.temIE ? "Sem IE Detectada" : ""));
+
+                ufsHtml += `
+                    <div class="uf-card">
+                        <span class="uf-sigla">${uf}</span>
+                        <span class="status-val ${isSim ? 'green' : 'red'}">${isSim ? 'SIM' : 'NÃO'}</span>
+                        <span class="reason-val">${isSim ? 'Obrigatório' : razao}</span>
+                        ${isSim ? `<span class="venc-val">Venc: Dia 15</span>
+                                   <div class="toggle-group">
+                                       <div class="toggle-btn ${info.gerado ? 'on-gerado' : ''}" onclick="toggleFlag('${emp.cnpj}', '${uf}', 'gerado')">${info.gerado ? '✓ Gerado' : 'Gerar'}</div>
+                                       <div class="toggle-btn ${info.enviado ? 'on-enviado' : ''}" onclick="toggleFlag('${emp.cnpj}', '${uf}', 'enviado')">${info.enviado ? '✓ Enviado' : 'Enviar'}</div>
+                                   </div>` : ''}
+                    </div>
                 `;
-                tbody.appendChild(row);
             });
-        }
 
-        function switchTab(tabId) {
-            ['dashboard', 'audit', 'pgdas', 'library'].forEach(id => document.getElementById('tab-' + id).classList.add('hidden-tab'));
-            document.getElementById('tab-' + tabId).classList.remove('hidden-tab');
-            const actions = document.getElementById('audit-actions');
-            if(tabId === 'audit') actions.classList.remove('hidden-tab'); 
-            else actions.classList.add('hidden-tab');
-        }
+            block.innerHTML = `
+                <div class="company-header">
+                    <div>
+                        <h3 class="company-title">${emp.nome}</h3>
+                        <small style="color: #ffffff; font-weight: bold; font-size: 0.85em;">CNPJ: ${emp.cnpj}${emp.inscricaoEstadual ? ` | IE: ${emp.inscricaoEstadual}` : ""}</small>
+                    </div>
+                    <div>
+                        <span class="badge badge-regime">${emp.regime || 'Simples Nacional'}</span>
+                        <span class="badge badge-ref">Ref: ${emp.periodo}</span>
+                    </div>
+                </div>
+                <div class="uf-grid">${ufsHtml || '<p style="color:#ffffff;">Nenhum estado detectado.</p>'}</div>
+            `;
+            resultsArea.appendChild(block);
+        });
+        if (cnpjsCount() > 0) printBtn.classList.remove('hidden');
+    }
 
-        function switchLibrary(type) {
-            switchTab('library');
-            activeLibrary = type;
-            const badge = document.getElementById('lib-badge');
-            badge.innerText = type === 'federal' ? 'FEDERAL' : (type === 'st' ? 'ESTADUAL ST' : 'BENEFÍCIOS SP');
-            badge.className = `bg-slate-800 px-4 py-2 rounded text-xs font-bold text-white border flex items-center uppercase ${type === 'federal' ? 'border-primary text-primary' : (type === 'st' ? 'border-accent text-accent' : 'border-success text-success')}`;
-            filterLibrary();
-        }
+    function cnpjsCount() { return Object.keys(consolidado).length; }
 
-        function filterLibrary() {
-            const term = document.getElementById('lib-search').value.toLowerCase();
-            const tbody = document.getElementById('lib-body');
-            tbody.innerHTML = '';
-            let source = activeLibrary === 'federal' ? DB_FEDERAL : (activeLibrary === 'st' ? DB_ST : DB_BENEFITS);
-            let filtered = source.filter(row => row.some(c => c && c.toLowerCase().includes(term)));
-            if(term === '') filtered = filtered.slice(0, 100);
-            filtered.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800 border-b border-slate-700/50 cursor-pointer transition";
-                tr.onclick = () => openLawModal(row);
-                if (activeLibrary === 'federal') tr.innerHTML = `<td class="p-3 text-primary font-bold">${row[0]||''}</td><td class="p-3 font-mono text-white">${row[1]||''}</td><td class="p-3 text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase font-bold hover:text-white"><i class="fa-solid fa-book-open mr-1"></i> Ver Lei</td>`;
-                else if (activeLibrary === 'st') tr.innerHTML = `<td class="p-3 font-bold text-slate-500">${row[0]||''}</td><td class="p-3 font-mono text-slate-400">${row[2]||''}</td><td class="p-3 font-mono text-white">${row[3]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[4]||''}</td><td class="p-3"><span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-bold border border-slate-600">${row[5]||'ST'}</span></td>`;
-                else tr.innerHTML = `<td class="p-3 font-bold text-success">${row[0]||''}</td><td class="p-3 text-white">${row[1]||''}</td><td class="p-3 font-mono text-slate-300">${row[2]||''}</td><td class="p-3 text-slate-300 text-[11px]">${row[3]||''}</td><td class="p-3 text-slate-500 text-[10px] uppercase hover:text-white"><i class="fa-solid fa-file-contract mr-1"></i> Ver Lei</td>`;
-                tbody.appendChild(tr);
+    function renderPrintArea() {
+        printArea.innerHTML = "";
+        Object.values(consolidado).forEach(emp => {
+            let ufsTxt = [];
+            Object.entries(emp.ufs).sort().forEach(([uf, info]) => {
+                if (OBRIGATORIOS.includes(uf) && emp.isSimples && info.temIE) {
+                    ufsTxt.push(`${uf}${(info.gerado && info.enviado) ? " ✅" : ""}`);
+                }
             });
-        }
+            if (Object.keys(emp.ufs).length > 0) {
+                const ieDisp = emp.inscricaoEstadual ? ` | IE: ${emp.inscricaoEstadual}` : "";
+                printArea.innerHTML += `
+                    <div class="print-company">
+                        <h3>${emp.nome}</h3>
+                        <p>CNPJ: ${emp.cnpj}${ieDisp} | Regime: ${emp.regime || 'Simples Nacional'} | Referência: ${emp.periodo}</p>
+                        <p class="print-status"><strong>ENTREGA PARA: ${ufsTxt.join(' | ') || 'NENHUMA'}</strong></p>
+                    </div>
+                `;
+            }
+        });
+    }
 
-        function openLawModal(row) {
-            const modal = document.getElementById('lawModal');
-            const body = document.getElementById('modalBody');
-            modal.classList.remove('hidden-tab');
-            const ncm = activeLibrary === 'st' ? row[3] : row[1];
-            const desc = activeLibrary === 'st' ? row[4] : row[2];
-            const lei = row[row.length - 1]; 
-            body.innerHTML = `<div class="mb-6 p-4 bg-black/40 rounded border border-slate-700"><h2 class="text-primary font-bold text-xl mb-2">${desc || 'Item sem descrição'}</h2><div class="flex gap-4 text-xs"><span class="text-white bg-slate-700 px-2 py-1 rounded">NCM: ${ncm || '-'}</span></div></div><div class="space-y-4"><h4 class="text-white font-bold border-b border-slate-700 pb-2">Dispositivo Legal:</h4><p class="text-justify text-slate-400">${lei || 'Detalhes indisponíveis'}</p></div>`;
-        }
-        function closeModal() { document.getElementById('lawModal').classList.add('hidden-tab'); }
+    // --- Eventos Finais ---
+    historyBtn.onclick = () => {
+        const h = historyContainer.classList.toggle('hidden');
+        if (!h) { resultsArea.classList.add('hidden'); loadHistory(); }
+        else { if (cnpjsCount() > 0) resultsArea.classList.remove('hidden'); }
+    };
+    
+    printBtn.onclick = async () => { renderPrintArea(); await autoSaveReport(); window.print(); };
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString(); }, 1000);
+    initCloud();
+</script>
 
-        function checkPgdas() {
-            const xml = parseFloat(document.getElementById('pgdas-xml-val').dataset.val || 0);
-            const user = parseFloat(document.getElementById('pgdas-input').value || 0);
-            const diff = xml - user;
-            const res = document.getElementById('pgdas-result');
-            res.classList.remove('hidden-tab');
-            if(diff > 0.01) res.innerHTML = `<div class="bg-danger/10 border-l-4 border-danger p-6 rounded-r text-white shadow-lg"><h3 class="font-bold text-lg mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>DIVERGÊNCIA ENCONTRADA</h3><p>O valor emitido em notas (XML) é superior ao declarado no PGDAS.</p><div class="mt-4 p-3 bg-black/40 rounded border border-danger/30 inline-block"><span class="text-xs text-danger uppercase font-bold">Valor a Declarar (Diferença):</span><br><span class="text-2xl font-mono">R$ ${diff.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div></div>`;
-            else res.innerHTML = `<div class="bg-success/10 border-l-4 border-success p-6 rounded-r text-white shadow-lg"><h3 class="font-bold text-lg mb-2"><i class="fa-solid fa-check-circle mr-2"></i>CONFORMIDADE TOTAL</h3><p>Os valores declarados conferem com a emissão de notas fiscais.</p></div>`;
-        }
-
-        function exportReport() {
-            if(xmlItems.length === 0) return alert("Nada para exportar");
-            const data = xmlItems.map(i => ({
-                Produto: i.xProd, 
-                NCM_Final: i.ncm, 
-                CST_PIS_Final: i.cstPis,
-                CST_ICMS_Final: i.cstIcms,
-                Valor: i.vProd, 
-                Status: i.status
-            }));
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Auditoria");
-            XLSX.writeFile(wb, "Relatorio_Correcao_Maradel.xlsx");
-        }
-
-        switchTab('dashboard');
-    </script>
 </body>
 </html>
